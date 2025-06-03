@@ -1,0 +1,57 @@
+{%load static%}
+{%include 'header.html'%}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static '/styles.css' %}">
+    </head>
+    <body>
+        <div class="containerProduct">
+            <div class="row">
+              <div class="col-md-4">
+                <img src="{% static 'Ravioles.png' %}" alt="Imagen del producto" class="img-fluid">
+              </div>
+              <div class="col-md-8">
+                <h2>{{ producto.nombre }}</h2>
+                <form>
+                  <div class="form-group">
+                    <label for="tipo_producto">Tipo de pasta</label>
+                    <select id="tipo_producto" name="tipo_producto">
+                        <option value="Espinaca">Espinaca</option>
+                        <option value="Pastelera de choclo">Pastelera de choclo</option>
+                        <option value="Jamon Queso">Jamon queso</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="salsa">Salsa:</label>
+                    <select id="salsa" name="salsa">
+                        <option value="Bechamel">Bechamel</option>
+                        <option value="Bechamel">Pesto</option>
+                        <option value="Bechamel">Bolognesa</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="descripcion">Descripción: Pasta de ravioles casera y fresca</label>
+                    <p id="descripcion">{{ producto.descripcion }}</p>
+                  </div>
+                  <div class="form-group">
+                    <label for="cantidad">Cantidad</label>
+                    <input type="number" id="cantidad" name="cantidad" value="1">
+                  </div>
+                  <div class="form-group">
+                    <label for="precio">Precio: 9.990$</label>
+                    <p id="precio">{{ producto.precio }}</p>
+                  </div>
+                  <a href="/carro" class="btn btn-primary">Añadir al carro</a></p>
+                </form>
+              </div>
+            </div>
+          </div>
+    </body>
+
+    <script src="" async defer></script>
+</html>

@@ -1,0 +1,6 @@
+Activar entorno virtual:
+Source .venv/Scripts/activate
+cd SirveMe
+
+Ejecutar pagina
+py manage.py runserver

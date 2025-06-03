@@ -1,0 +1,41 @@
+{%load static%}
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedido</title>
+
+</head>
+
+{%include "header.html"%}
+<body>
+    <div class="content">
+        <div class="productos">
+            <img src="{% static 'Ravioles.png' %}" alt="Imagen del producto" >
+    
+            {% for producto in productos %}
+            <div class="producto">
+                <img src="{{ producto.foto.url }}" alt="Foto {{ producto.nombre }}">
+                <div class="detalle">
+                    <strong>Tipo de ravioles: Jamon queso{{ total }}</strong>
+                    <strong>Salsa: Bechamel{{ total }}</strong>
+                    <strong>{{ producto.nombre }}</strong>
+                    <span>Cantidad: {{ producto.cantidad }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <div class="resumen">
+            <h3>Resumen</h3>
+            <label for="nombre">1x Ravioles:</label>
+            {% for producto in productos %}
+            <p>{{ producto.nombre }} - ${{ producto.precio }}</p>
+            {% endfor %}
+            <hr>
+            <strong>Total: $9.990{{ total }}</strong>
+            <a href="/home" class="btn pagar">Pagar</a></p>
+        </div>
+    </div>
+    </body>
+</html>

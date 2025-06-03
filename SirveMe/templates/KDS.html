@@ -1,0 +1,52 @@
+{%load static%} {%include "header.html"%}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>KDS Cocina</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2 class="mb-4 text-center">Pedidos Pendientes</h2>
+      {% if pedidos %} {% for pedido in pedidos %}
+      <div class="card mb-4">
+        <div class="card-header">
+          <strong>Mesa:</strong> {{ pedido.fk_mesa.numeroMesa }} |
+          <strong>Mesero:</strong> {{ pedido.mesero.first_name }} 
+          {{ pedido.mesero.last_name }} | <strong>Fecha:</strong> 
+          {{pedido.fecha|date:"d/m/Y H:i" }}
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for detalle in pedido.detalles.all %}
+            <li class="list-group-item">
+              {% if detalle.entrada %} Entrada:
+              <strong>{{ detalle.entrada.nombre }}</strong> x{{detalle.cantidad}}
+               {% endif %} {% if detalle.platoDeFondo %} Plato de Fondo:
+              <strong>{{ detalle.platoDeFondo.nombre }}</strong> x{{detalle.cantidad}} 
+              {% endif %} {% if detalle.postre %} Postre:
+              <strong>{{ detalle.postre.nombre }}</strong> x{{ detalle.cantidad}} 
+              {% endif %} {% if detalle.bebestible %} Bebestible:
+              <strong>{{ detalle.bebestible.nombre }}</strong> x{{detalle.cantidad }} 
+              {% endif %}
+              <form method="post" action="{% url 'pedido_listo' pedido.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success mt-2">
+                  Listo
+                </button>
+              </form>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <div class="alert alert-info text-center">No hay pedidos pendientes.</div>
+      {% endif %}
+    </div>
+  </body>
+</html>

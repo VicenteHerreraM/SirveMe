@@ -1,0 +1,11 @@
+{% load static %}
+{% include 'header.html' %}
+<div class="container mt-5" style="max-width: 500px;">
+    <h2 class="mb-4 text-center">¿Eliminar usuario?</h2>
+    <p>¿Estás seguro de que deseas eliminar a <strong>{{ usuario.email }}</strong>?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger w-100 mb-2">Sí, eliminar</button>
+        <a href="{% url 'usuarios_list' %}" class="btn btn-secondary w-100">Cancelar</a>
+    </form>
+</div>

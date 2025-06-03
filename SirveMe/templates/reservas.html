@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+{%load static%}
+    <header>
+        {%include 'header.html'%}
+    </header>
+
+    <body>
+        <h1>Reservas vincenzo</h1>
+        <div class="container">
+            <form>
+            <h2 class = "form-group">Ingresar Datos</h2>
+              <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required>
+              </div>
+              <div class="form-group">
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" name="telefono" required>
+              </div>
+              <div class="form-group">
+                <label for="personas">Cantidad de personas:</label>
+                <input type="number" id="personas" name="personas" required>
+              </div>
+              <div class="form-group">
+                <label for="fecha">Fecha:</label>
+                <input type="date" id="fecha" name="fecha" required>
+              </div>
+              <button class="boton" type="submit">Ingresar</button>
+            </form>
+          </div>
+        <div class="titulo">Seleccione la mesa</div>
+        <form method="post">
+            {% csrf_token %}
+            <div class="zona-mesas">
+                {% for mesa in mesas %}
+                    <div class="mesa {% if not mesa.disponible %}no-disponible{% endif %}" data-id="{{ mesa.id }}">
+                        {{ mesa.numero }}
+                    </div>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="mesa_id" id="mesa_id">
+            <button type="submit" class="btn-seleccionar">Seleccionar mesa</button>
+        </form>
+        <script>
+            const mesas = document.querySelectorAll('.mesa');
+            const inputMesa = document.getElementById('mesa_id');
+            mesas.forEach(mesa => {
+                mesa.addEventListener('click', () => {
+                    if (!mesa.classList.contains('no-disponible')) {
+                        mesas.forEach(m => m.classList.remove('seleccionada'));
+                        mesa.classList.add('seleccionada');
+                        inputMesa.value = mesa.dataset.id;
+                    }
+                });
+            });
+        </script>
+
+        <script src="" async defer></script>
+    </body>
+</html>

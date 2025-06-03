@@ -1,0 +1,40 @@
+{% load static %}
+{% include 'header.html' %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Visor de Mesas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Visor de Mesas</h2>
+    <div class="row">
+        {% for mesa in mesas %}
+        <div class="col-md-3 mb-4">
+            <div class="card text-center {% if mesa.estado %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">Mesa {{ mesa.numeroMesa }}</h5>
+                    <p class="card-text">
+                        Estado:
+                        {% if mesa.estado %}
+                            <span class="fw-bold">Disponible</span>
+                        {% else %}
+                            <span class="fw-bold">Ocupada</span>
+                        {% endif %}
+                    </p>
+                    {% if mesa.estado %}
+                    <form method="get" action="{% url 'crear_pedido' %}">
+                        <input type="hidden" name="mesa_id" value="{{ mesa.idMesas }}">
+                        <button type="submit" class="btn btn-light btn-sm mt-2">Seleccionar mesa</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

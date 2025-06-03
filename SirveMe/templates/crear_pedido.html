@@ -1,0 +1,78 @@
+{% load static %}
+{% include 'header.html' %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container mt-5" style="max-width: 700px;">
+    <h2 class="mb-4 text-center">Crear Pedido</h2>
+    <form method="post" class="border p-4 rounded shadow-sm bg-light">
+        {% csrf_token %}
+        {{ pedido_form.fk_mesa.as_hidden }}
+        <hr>
+        <h5>Detalle del pedido</h5>
+        {{ formset.management_form }}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Entrada</th>
+                    <th>Plato de Fondo</th>
+                    <th>Agregado/Salsa</th>
+                    <th>Postre</th>
+                    <th>Bebestible</th>
+                    <th>Cantidad</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                <tr>
+                    <td>{{ form.entrada }}
+                        {{ form.entrada.errors }}
+                    </td>
+                    <td>{{ form.platoDeFondo }}</td>
+                    <td>{{ form.agregadoSalsa }}</td>
+                    <td>{{ form.postre }}</td>
+                    <td>{{ form.bebestible }}</td>
+                    <td>{{ form.cantidad }}</td>
+                    <td>
+                        {% if formset.can_delete %}
+                            {{ form.DELETE }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table style="display:none;">
+    <tbody id="empty-form-row">
+        <tr>
+            <td>{{ formset.empty_form.entrada }}</td>
+            <td>{{ formset.empty_form.platoDeFondo }}</td>
+            <td>{{ formset.empty_form.agregadoSalsa }}</td>
+            <td>{{ formset.empty_form.postre }}</td>
+            <td>{{ formset.empty_form.bebestible }}</td>
+            <td>{{ formset.empty_form.cantidad }}</td>
+            <td>
+                {% if formset.can_delete %}
+                    {{ formset.empty_form.DELETE }}
+                {% endif %}
+            </td>
+        </tr>
+    </tbody>
+</table>
+        <button type="submit" class="btn btn-success w-100 mb-2">Enviar pedido</button>
+    </form>
+    <button id="add-form" class="btn btn-primary w-100">Agregar otro plato</button>
+</div>
+
+<script>
+document.getElementById('add-form').onclick = function(e){
+    e.preventDefault();
+    var totalForms = document.getElementById('id_form-TOTAL_FORMS');
+    var currentCount = parseInt(totalForms.value);
+    var emptyRow = document.querySelector('#empty-form-row tr');
+    var newRow = emptyRow.cloneNode(true);
+    newRow.innerHTML = newRow.innerHTML.replace(/__prefix__/g, currentCount);
+    document.querySelector('tbody').appendChild(newRow);
+    totalForms.value = currentCount + 1;
+};
+</script>
