@@ -1,0 +1,10 @@
+{% load static %}
+{% include 'header.html' %}
+<div class="container mt-5">
+    <h2>Método de entrega</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Continuar</button>
+    </form>
+</div>

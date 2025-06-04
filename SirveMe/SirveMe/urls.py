@@ -25,13 +25,11 @@ from .views import adminview
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/',views.home),
-    path('store/',views.store , name = 'store'),
     path('reservas/',views.reservas),
     path('product/',views.product),
     path('login/', login_view, name='login'),
     path('homeWaiter/',views.homeWaiter , name = 'homeWaiter'),
     path('selectTable/',views.select_table , name= 'select_table'),
-    path('carro/',views.carro, name = 'carro'),
     path('admin-dashboard/', adminview, name='admin_dashboard'),
     path('', include('restaurant.urls')),
     path('', include('users.urls')),

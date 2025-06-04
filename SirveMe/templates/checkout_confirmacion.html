@@ -1,0 +1,7 @@
+{% include 'header.html' %}
+<div class="container mt-5">
+    <h2>¡Pedido confirmado!</h2>
+    <p>Tu pedido ha sido registrado correctamente.</p>
+    <p>Método de entrega: {{ metodo|title }}</p>
+    <a href="{% url 'store' %}" class="btn btn-primary mt-3">Volver a la tienda</a>
+</div>

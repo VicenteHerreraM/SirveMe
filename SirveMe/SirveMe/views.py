@@ -16,9 +16,6 @@ def home(request):
 def denied(request):
     return render(request,'denied.html')
 
-def store(request):
-    return render(request,'store.html')
-
 def reservas(request):
     return render(request, 'reservas.html')
 
@@ -52,10 +49,6 @@ def login_view(request):
 def select_table(request):
     mesas = Mesa.objects.all()  # Obtiene todas las mesas de la base de datos
     return render(request, 'selectTable.html', {'mesas': mesas})
-
-
-def carro(request):
-    return render(request,'carro.html')
 
 
 @role_required(['mesero'])

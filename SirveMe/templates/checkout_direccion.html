@@ -1,0 +1,28 @@
+{% load static %}
+{% include 'header.html' %}
+<div class="container mt-5">
+    <h2>Dirección de entrega</h2>
+    {% if usuario %}
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Región</label>
+                <input type="text" class="form-control" value="{{ usuario.region }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Comuna</label>
+                <input type="text" class="form-control" value="{{ usuario.comuna }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ciudad</label>
+                <input type="text" class="form-control" value="{{ usuario.ciudad }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Dirección</label>
+                <input type="text" class="form-control" value="{{ usuario.direccion }}">
+            </div>
+            <button type="submit" class="btn btn-success">Confirmar pedido</button>
+        </form>
+    {% else %}
+        <div class="alert alert-warning">No se encontró información de dirección para este usuario.</div>
+    {% endif %}
+</div>

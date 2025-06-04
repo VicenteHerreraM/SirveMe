@@ -1,71 +1,54 @@
-{%load static%}
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="{% static 'styles.css' %}">
-        <script src = "{%static 'test.js'%}"></script>
-    </head>
-    <header>
-        {%include 'header.html'%}
-    </header>
-    <body>
-<!-- Barra de búsqueda -->
-<div class="busqueda">
-    <input type="search" id="busqueda" placeholder="Buscar productos...">
-    <button id="buscar">Buscar</button>
-  </div>
-  
-  <!-- Filtrador -->
-  <div class="filtrador">
-    <select id="categoria">
-      <option value="">Todas las categorías</option>
-      <option value="categoria1">Pastas</option>
-      <option value="categoria2">Carnes</option>
-      <option value="categoria3">Bebestibles</option>
-    </select>
-    <select id="precio">
-      <option value="">Todos los precios</option>
-      <option value="menor-10">Menor a $10.000</option>
-      <option value="entre-10-20">Entre $10.000 y $20.000</option>
-      <option value="mayor-20">Mayor a $20.000</option>
-    </select>
-  </div>
-  
-  <!-- Listado de productos -->
-  <div class="productos">
-    <ul>
-      <li>
-        <a href="/product">
-            <img src="{% static 'Ravioles.png' %}">
-          </a>
-        <h2>Ravioles</h2>
-        <p>Precio: $9.990</p>
-      </li>
-      <li>
-        <a href="/product">
-        <img src="{% static 'Noquis.png' %}">
-            </a>
-        <h2>Noquis</h2>
-        <p>Precio: $14.990</p>
-      </li>
-      <li>
-        <a href="/product">
-        <img src="{% static 'Comida 3.png' %}">
-        </a>
-        <h2>Chuleta de cerdo</h2>
-        <p>Precio: $19.990</p>
-      </li>
-      <!-- ... -->
-    </ul>
-  </div>
-    </body>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Tienda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+{% include 'header.html' %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Tienda</h2>
+    <h4>Bebestibles</h4>
+    <div class="row">
+        {% for b in bebestibles %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if b.imagen %}
+                    <img src="{{ b.imagen.url }}" class="card-img-top" alt="{{ b.nombre }}">
+                    <a href="{% url 'producto_detalle' 'bebestible' b.id %}">
+                {% else %}
+                    <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="Sin imagen">
+                    <a href="{% url 'producto_detalle' 'bebestible' b.id %}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ b.nombre }}</h5>
+                    <p class="card-text">Stock: {{ b.cantidad }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <h4>Platos de Fondo</h4>
+    <div class="row">
+        {% for f in fondos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if f.imagen %}
+                    <img src="{{ f.imagen.url }}" class="card-img-top" alt="{{ f.nombre }}">
+                    <a href="{% url 'producto_detalle' 'fondo' f.id %}">
+                {% else %}
+                    <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="Sin imagen">
+                    <a href="{% url 'producto_detalle' 'fondo' f.id %}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ f.nombre }}</h5>
+                    <p class="card-text">Stock: {{ f.cantidad }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
 </html>

@@ -23,10 +23,12 @@
               <li><a href = "/store"  class="menu__item" href="#">Tienda</a></li>
               <li><a href = "/homeWaiter"  class="menu__item" href="#">Pagina de mesero</a></li>
               <li><a href = "/KDS"  class="menu__item" href="#">KDS</a></li>
-              <li><a href = "/Register"  class="menu__item" href="#">Registrarse</a></li>
+              <li><a href = "/registrate"  class="menu__item" href="#">Registrarse</a></li>
             </ul>
-            {% if user.is_authenticated %}
-    <a href="{% url 'logout' %}" class="btn btn-outline-danger">Cerrar sesión</a>
-{% endif %}
+        </div>
+        {% if user.is_authenticated %}
+          <a href="{% url 'logout' %}" class="btn btn-outline-danger">Cerrar sesión</a>
+          <li><a href="{% url 'ver_carro' %}" class="menu__item">Carro</a></li>
+        {% endif %}
 </header>
 </html>

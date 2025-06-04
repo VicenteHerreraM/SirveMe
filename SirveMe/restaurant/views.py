@@ -2,9 +2,15 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.forms import modelformset_factory
 from .models import Inventario, Entrada, PlatoDeFondo, Pedidos, DetallePedido, Mesas , AgregadoSalsa , Postre , Bebestibles
-from .forms import EntradaForm, PlatoDeFondoForm, PostreForm, InventarioForm , PedidoForm, DetallePedidoForm
+from .models import Pedidos as Pedidos  
+from .forms import EntradaForm, PlatoDeFondoForm, PostreForm, InventarioForm , PedidoForm, DetallePedidoForm , PedidoProductoForm, MetodoEntregaForm
 from .decorators import role_required
+from datetime import datetime, date
+from users.models import CustomUser
 
+@role_required(['mesero'])
+def homeWaiter(request):
+    return render(request, 'homeWaiter.html')
 
 def inventario_list(request):
     inventarios = Inventario.objects.all()
@@ -37,8 +43,6 @@ def inventario_delete(request, pk):
         inventario.delete()
         return redirect('inventario_list')
     return render(request, 'inventario_confirm_delete.html', {'inventario': inventario})
-
-
 
 def entrada_list(request):
     entradas = Entrada.objects.all()
@@ -158,7 +162,7 @@ def crear_pedido(request):
                 for form in formset
                 if form.cleaned_data.get('cantidad')
             ])
-            pedido.save()  # Guarda el pedido para obtener un ID
+            pedido.save()  
 
             # Marcar la mesa como ocupada
             mesa = pedido.fk_mesa
@@ -176,7 +180,7 @@ def crear_pedido(request):
             pedido.valor_total = pedido.calcular_total()
             pedido.save(update_fields=['valor_total'])
 
-            return redirect('kds')
+            return redirect('homeWaiter')
     else:
         initial_data = {'fk_mesa': mesa_id} if mesa_id else None
         pedido_form = PedidoForm(initial=initial_data)
@@ -216,3 +220,147 @@ def pedido_listo(request, pedido_id):
 def visor_mesas(request):
     mesas = Mesas.objects.all()
     return render(request, 'selectTable.html', {'mesas': mesas})
+
+def store(request):
+    bebestibles = Bebestibles.objects.all()
+    fondos = PlatoDeFondo.objects.all()
+    return render(request, 'store.html', {
+        'bebestibles': bebestibles,
+        'fondos': fondos,
+    })
+    
+def producto_detalle(request, tipo, pk):
+    if tipo == "bebestible":
+        producto = Bebestibles.objects.get(pk=pk)
+    else:
+        producto = PlatoDeFondo.objects.get(pk=pk)
+    entradas = Entrada.objects.all()
+    agregados = AgregadoSalsa.objects.all()
+    hoy = datetime.now()
+    es_fin_de_semana = hoy.weekday() in [5, 6]
+    valor_semana = Pedidos._meta.get_field('valor_semana').default
+    valor_finsemana = Pedidos._meta.get_field('valor_finsemana').default
+    precio_menu = valor_finsemana if es_fin_de_semana else valor_semana
+
+    return render(request, 'producto_detalle.html', {
+        'producto': producto,
+        'tipo': tipo,
+        'entradas': entradas,
+        'agregados': agregados,
+        'precio_menu': precio_menu,
+    })
+
+def agregar_al_carro(request, tipo, pk):
+    if request.method == 'POST':
+        if tipo == "bebestible":
+            producto = Bebestibles.objects.get(pk=pk)
+        else:
+            producto = PlatoDeFondo.objects.get(pk=pk)
+        entrada_id = request.POST.get('entrada')
+        agregado_id = request.POST.get('agregado')
+        cantidad = int(request.POST.get('cantidad', 1))
+
+        entrada_nombre = ""
+        if entrada_id:
+            from .models import Entrada
+            entrada = Entrada.objects.filter(pk=entrada_id).first()
+            entrada_nombre = entrada.nombre if entrada else ""
+        agregado_nombre = ""
+        if agregado_id:
+            from .models import AgregadoSalsa
+            agregado = AgregadoSalsa.objects.filter(pk=agregado_id).first()
+            agregado_nombre = agregado.nombre if agregado else ""
+
+        item = {
+            'tipo': tipo,
+            'producto_id': producto.id,
+            'nombre': producto.nombre,
+            'cantidad': cantidad,
+            'entrada_id': entrada_id,
+            'entrada_nombre': entrada_nombre,
+            'agregado_id': agregado_id,
+            'agregado_nombre': agregado_nombre,
+            'imagen': producto.imagen.url if producto.imagen else '',
+        }
+        carro = request.session.get('carro', [])
+        carro.append(item)
+        request.session['carro'] = carro
+        request.session.modified = True
+
+        return redirect('ver_carro')
+    return redirect('store')
+
+def ver_carro(request):
+    carro = request.session.get('carro', [])
+    total = 0
+    for item in carro:
+        if item['tipo'] == 'bebestible':
+            producto = Bebestibles.objects.filter(pk=item['producto_id']).first()
+            precio = producto.precio if producto else 0
+        else:
+            hoy = datetime.now()
+            es_fin_de_semana = hoy.weekday() in [5, 6]
+            valor_semana = Pedidos._meta.get_field('valor_semana').default
+            valor_finsemana = Pedidos._meta.get_field('valor_finsemana').default
+            precio = valor_finsemana if es_fin_de_semana else valor_semana
+        item['precio'] = precio
+        item['subtotal'] = precio * int(item['cantidad'])
+        total += item['subtotal']
+    return render(request, 'carro.html', {'carro': carro, 'total': total})
+
+def actualizar_carro(request, idx):
+    if request.method == 'POST':
+        carro = request.session.get('carro', [])
+        nueva_cantidad = int(request.POST.get('cantidad', 1))
+        if 0 <= idx < len(carro):
+            carro[idx]['cantidad'] = nueva_cantidad
+            request.session['carro'] = carro
+            request.session.modified = True
+    return redirect('ver_carro')
+
+def eliminar_del_carro(request, idx):
+    if request.method == 'POST':
+        carro = request.session.get('carro', [])
+        if 0 <= idx < len(carro):
+            carro.pop(idx)
+            request.session['carro'] = carro
+            request.session.modified = True
+    return redirect('ver_carro')
+
+def checkout(request):
+    usuario = None
+    if request.user.is_authenticated:
+        usuario = CustomUser.objects.filter(email=request.user.email).first()
+    if request.method == 'POST':
+        form = MetodoEntregaForm(request.POST)
+        if form.is_valid():
+            metodo = form.cleaned_data['metodo']
+            if metodo == 'domicilio':
+                return render(request, 'checkout_direccion.html', {'usuario': usuario})
+            else:
+                return render(request, 'checkout_confirmacion.html', {'metodo': 'retiro'})
+    else:
+        form = MetodoEntregaForm()
+    return render(request, 'checkout_confirmacion.html', {'form': form, 'usuario': usuario})
+
+def atencion_mesas(request):
+    hoy = date.today()
+    pedidos_listos = Pedidos.objects.filter(
+        estado='listo',
+        fecha__date=hoy
+    ).select_related('fk_mesa')
+    mesas = {}
+    for pedido in pedidos_listos:
+        mesa = pedido.fk_mesa
+        if mesa not in mesas:
+            mesas[mesa] = {'pedidos': [], 'total': 0}
+        mesas[mesa]['pedidos'].append(pedido)
+        mesas[mesa]['total'] += pedido.valor_total
+    return render(request, 'atencion_mesas.html', {'mesas': mesas})
+
+def finalizar_mesa(request, mesa_id):
+    mesa = get_object_or_404(Mesas, idMesas=mesa_id)
+    mesa.estado = True
+    mesa.save()
+    Pedidos.objects.filter(fk_mesa=mesa, estado='listo').update(estado='finalizado')
+    return redirect('atencion_mesas')

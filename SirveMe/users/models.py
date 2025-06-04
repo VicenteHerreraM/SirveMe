@@ -15,6 +15,8 @@ class Clientes(models.Model):
     region = models.CharField(max_length=100 , null=True, blank=True)
     comuna = models.CharField(max_length=100, null=True, blank=True)
     ciudad = models.CharField(max_length=100, null=True, blank=True)
+    direccion = models.CharField(max_length=100, null=True, blank=True)
+    numero = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         

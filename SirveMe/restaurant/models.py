@@ -6,6 +6,7 @@ class Bebestibles(models.Model):
     cantidad = models.IntegerField(null = True)
     precio = models.IntegerField(null = True)
     tipoBebestible = models.CharField(max_length=100)
+    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -21,6 +22,7 @@ class Postre(models.Model):
 class PlatoDeFondo(models.Model):  
     nombre = models.CharField(max_length=100)
     cantidad = models.IntegerField(null = True)
+    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
 
 
     def __str__(self):

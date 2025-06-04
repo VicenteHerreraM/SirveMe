@@ -1,5 +1,6 @@
 from django import forms
 from .models import CustomUser
+from django.contrib.auth.forms import UserCreationForm
 
 class CustomUserForm(forms.ModelForm):
     password = forms.CharField(
@@ -30,3 +31,16 @@ class CustomUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+class ClienteRegistroForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email', 'password1', 'password2']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password2 = cleaned_data.get("password2")
+        if password and password2 and password != password2:
+            self.add_error('password2', "Las contraseñas no coinciden.")
+        return cleaned_data

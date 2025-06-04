@@ -90,3 +90,15 @@ class DetallePedidoForm(forms.ModelForm):
                     if producto.cantidad < cantidad:
                         self.add_error(field_name, f"El producto '{producto.nombre}' no tiene suficiente stock.")
             return cleaned_data
+
+class PedidoProductoForm(forms.Form):
+    entrada = forms.ModelChoiceField(queryset=Entrada.objects.filter(cantidad__gt=0), required=False, label="Entrada")
+    agregadoSalsa = forms.ModelChoiceField(queryset=AgregadoSalsa.objects.filter(cantidad__gt=0), required=False, label="Agregado/Salsa")
+    cantidad = forms.IntegerField(min_value=1, initial=1, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+
+class MetodoEntregaForm(forms.Form):
+    METODOS = [
+        ('retiro', 'Retiro en tienda'),
+        ('domicilio', 'Entrega a domicilio'),
+    ]
+    metodo = forms.ChoiceField(choices=METODOS, widget=forms.RadioSelect, label="Método de entrega")

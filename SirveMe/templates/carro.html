@@ -1,41 +1,63 @@
-{%load static%}
-
+{% load static %}
+{% include 'header.html' %}
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Pedido</title>
-
+    <meta charset="utf-8">
+    <title>Carro de Compras</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
-{%include "header.html"%}
 <body>
-    <div class="content">
-        <div class="productos">
-            <img src="{% static 'Ravioles.png' %}" alt="Imagen del producto" >
-    
-            {% for producto in productos %}
-            <div class="producto">
-                <img src="{{ producto.foto.url }}" alt="Foto {{ producto.nombre }}">
-                <div class="detalle">
-                    <strong>Tipo de ravioles: Jamon queso{{ total }}</strong>
-                    <strong>Salsa: Bechamel{{ total }}</strong>
-                    <strong>{{ producto.nombre }}</strong>
-                    <span>Cantidad: {{ producto.cantidad }}</span>
-                </div>
-            </div>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Carro de Compras</h2>
+    {% if carro %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Imagen</th>
+                <th>Producto</th>
+                <th>Entrada</th>
+                <th>Agregado/Salsa</th>
+                <th>Cantidad</th>
+                <th>Precio unitario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in carro %}
+            <tr>
+                <td>
+                    {% if item.imagen %}
+                        <img src="{{ item.imagen }}" alt="{{ item.nombre }}" width="60">
+                    {% else %}
+                        <img src="{% static 'img/no-image.png' %}" alt="Sin imagen" width="60">
+                    {% endif %}
+                </td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.entrada_nombre }}</td>
+                <td>{{ item.agregado_nombre }}</td>
+                <td>
+                    <form method="post" action="{% url 'actualizar_carro' forloop.counter0 %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" style="width:60px;" class="form-control d-inline">
+                        <button type="submit" class="btn btn-sm btn-success">Actualizar</button>
+                    </form>
+                </td>
+                <td>${{ item.precio }}</td>
+                <td>
+                    <form method="post" action="{% url 'eliminar_del_carro' forloop.counter0 %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
             {% endfor %}
-        </div>
-    
-        <div class="resumen">
-            <h3>Resumen</h3>
-            <label for="nombre">1x Ravioles:</label>
-            {% for producto in productos %}
-            <p>{{ producto.nombre }} - ${{ producto.precio }}</p>
-            {% endfor %}
-            <hr>
-            <strong>Total: $9.990{{ total }}</strong>
-            <a href="/home" class="btn pagar">Pagar</a></p>
-        </div>
-    </div>
-    </body>
+        </tbody>
+    </table>
+    <a href="{% url 'checkout' %}" class="btn btn-primary float-end mt-3">Continuar compra</a>
+    <h4 class="text-end">Total: ${{ total }}</h4>
+    {% else %}
+    <div class="alert alert-info text-center">El carro está vacío.</div>
+    {% endif %}
+</div>
+</body>
 </html>

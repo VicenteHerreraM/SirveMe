@@ -1,4 +1,7 @@
 .header {
+    display: flex;
+    align-items: center;
+    justify-content: right;
     background-color: #800020;
     height: 80px;
     width: 100%;
@@ -162,8 +165,93 @@ transition-duration: .25s;
 background-color: #CFD8DC;
 }
 
+.mesa {
+    width: 60px;
+    height: 60px;
+    margin: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #800020;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid #800020;
+    transition: background 0.2s, border 0.2s;
+}
+.mesa.no-disponible {
+    background: #ccc;
+    color: #888;
+    cursor: not-allowed;
+    border: 2px solid #ccc;
+}
+.mesa.seleccionada {
+    background: #28a745;
+    border: 2px solid #28a745;
+    color: #fff;
+}
+.zona-mesas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
 
+.card-mesa {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      border: none;
+}
+.card-header {
+      background: #007bff;
+      color: white;
+      font-size: 1.2rem;
+      border-radius: 12px 12px 0 0;
+}
+.pedido-lista {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+}
+.btn-success {
+      width: 100%;
+      font-weight: bold;
+      letter-spacing: 1px;
+}
+.total-cuenta {
+      font-size: 1.1rem;
+      color: #198754;
+      font-weight: bold;
+}
 
-
-
-
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 60px;
+    flex-wrap: wrap;
+}
+.cuadro-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    height: 140px;
+    background-color: #800020;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    text-align: center;
+}
+.cuadro-link:hover {
+    background-color: #a8324a;
+    color: #fff;
+    transform: scale(1.05);
+}

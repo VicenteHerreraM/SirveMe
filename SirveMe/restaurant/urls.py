@@ -1,4 +1,6 @@
-from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import path , include
 from . import views
 from django.urls import path, include
 from .views import inventario_list, inventario_create, inventario_update, inventario_delete
@@ -24,5 +26,14 @@ urlpatterns = [
     path('KDS/',views.kds , name = 'kds'),   
     path('pedido_listo/<int:pedido_id>/', views.pedido_listo, name='pedido_listo'),
     path('visor-mesas/', views.visor_mesas, name='visor_mesas'),
+    path('store/',views.store , name = 'store'),
+    path('producto/<str:tipo>/<int:pk>/', views.producto_detalle, name='producto_detalle'),
+    path('agregar_al_carro/<str:tipo>/<int:pk>/', views.agregar_al_carro, name='agregar_al_carro'),
+    path('carro/', views.ver_carro, name='ver_carro'),
+    path('carro/actualizar/<int:idx>/', views.actualizar_carro, name='actualizar_carro'),
+    path('carro/eliminar/<int:idx>/', views.eliminar_del_carro, name='eliminar_del_carro'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('atencion-mesas/', views.atencion_mesas, name='atencion_mesas'),
+    path('finalizar-mesa/<int:mesa_id>/', views.finalizar_mesa, name='finalizar_mesa'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
