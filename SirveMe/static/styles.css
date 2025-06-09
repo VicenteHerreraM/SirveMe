@@ -24,7 +24,15 @@
       align-items: center;
     }
 
-
+  .btn-custom {
+      background-color: #800020 !important;
+      color: #fff !important;
+      border: none;
+  }
+  .btn-custom:hover, .btn-custom:focus {
+      background-color: #a8324a !important;
+      color: #fff !important;
+  }
     
   .button-custom {
       background-color: #800020; 
@@ -254,4 +262,32 @@ background-color: #CFD8DC;
     background-color: #a8324a;
     color: #fff;
     transform: scale(1.05);
+}
+
+.product-link {
+    text-decoration: none;
+    color: inherit;
+}
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.stock {
+    font-size: 1rem;
+    color: #800020;
+}
+
+.card-section {
+    margin-bottom: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.table thead th {
+    background-color: #800020;
+    color: #fff;
+}
+.badge-total {
+    background: #198754;
+    font-size: 1rem;
+    margin-left: 10px;
 }

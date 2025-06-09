@@ -49,18 +49,5 @@
         </div>
     </div>
 </div>
-<script>
-    const mesas = document.querySelectorAll('.mesa');
-    const inputMesa = document.getElementById('mesa_id');
-    mesas.forEach(mesa => {
-        mesa.addEventListener('click', () => {
-            if (!mesa.classList.contains('no-disponible')) {
-                mesas.forEach(m => m.classList.remove('seleccionada'));
-                mesa.classList.add('seleccionada');
-                inputMesa.value = mesa.dataset.id;
-            }
-        });
-    });
-</script>
 </body>
 </html>

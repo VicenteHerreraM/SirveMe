@@ -1,52 +1,29 @@
+<!-- filepath: c:\Users\vice1\OneDrive\Documentos\Proyecto de titulo\SirveMe\templates\store.html -->
 {% load static %}
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
     <title>Tienda</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
 {% include 'header.html' %}
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Tienda</h2>
+
     <h4>Bebestibles</h4>
     <div class="row">
         {% for b in bebestibles %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                {% if b.imagen %}
-                    <img src="{{ b.imagen.url }}" class="card-img-top" alt="{{ b.nombre }}">
-                    <a href="{% url 'producto_detalle' 'bebestible' b.id %}">
-                {% else %}
-                    <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="Sin imagen">
-                    <a href="{% url 'producto_detalle' 'bebestible' b.id %}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ b.nombre }}</h5>
-                    <p class="card-text">Stock: {{ b.cantidad }}</p>
-                </div>
-            </div>
-        </div>
+            {% include 'product_card.html' with producto=b tipo='bebestible' %}
         {% endfor %}
     </div>
+
     <h4>Platos de Fondo</h4>
     <div class="row">
         {% for f in fondos %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                {% if f.imagen %}
-                    <img src="{{ f.imagen.url }}" class="card-img-top" alt="{{ f.nombre }}">
-                    <a href="{% url 'producto_detalle' 'fondo' f.id %}">
-                {% else %}
-                    <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="Sin imagen">
-                    <a href="{% url 'producto_detalle' 'fondo' f.id %}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ f.nombre }}</h5>
-                    <p class="card-text">Stock: {{ f.cantidad }}</p>
-                </div>
-            </div>
-        </div>
+            {% include 'product_card.html' with producto=f tipo='fondo' %}
         {% endfor %}
     </div>
 </div>

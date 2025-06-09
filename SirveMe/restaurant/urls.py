@@ -8,6 +8,7 @@ from .views import inventario_list, inventario_create, inventario_update, invent
 urlpatterns = [
     path('inventario/', views.inventario_list, name='inventario_list'),
     path('inventario/nuevo/', views.inventario_create, name='inventario_create'),
+    path('reservas/', views.reservas, name='reservas'),
     path('inventario/editar/<int:pk>/', views.inventario_update, name='inventario_update'),
     path('inventario/eliminar/<int:pk>/', views.inventario_delete, name='inventario_delete'),
     path('entradas/', views.entrada_list, name='entrada_list'),
@@ -35,5 +36,6 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('atencion-mesas/', views.atencion_mesas, name='atencion_mesas'),
     path('finalizar-mesa/<int:mesa_id>/', views.finalizar_mesa, name='finalizar_mesa'),
+    path('productos_vendidos/', views.productos_vendidos, name='productos_vendidos'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

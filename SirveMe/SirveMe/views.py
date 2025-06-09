@@ -16,9 +16,6 @@ def home(request):
 def denied(request):
     return render(request,'denied.html')
 
-def reservas(request):
-    return render(request, 'reservas.html')
-
 def product(request):
     return render(request,'product.html')
 

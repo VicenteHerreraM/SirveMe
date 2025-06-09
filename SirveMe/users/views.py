@@ -1,9 +1,21 @@
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import CustomUser, Mesas
 from .forms import CustomUserForm,  ClienteRegistroForm
 
 def usuarios_list(request):
-    usuarios = CustomUser.objects.all()
+    query = request.GET.get('q', '')
+    if query:
+        usuarios = CustomUser.objects.filter(
+            Q(email__icontains=query) |
+            Q(rut__icontains=query) |
+            Q(rol__icontains=query) |
+            Q(direccion__icontains=query) |
+            Q(comuna__icontains=query) |
+            Q(ciudad__icontains=query)
+        )
+    else:
+        usuarios = CustomUser.objects.all()
     return render(request, 'usuarios_list.html', {'usuarios': usuarios})
 
 def usuario_create(request):

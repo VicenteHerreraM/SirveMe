@@ -28,6 +28,10 @@ class CustomUserForm(forms.ModelForm):
         password = self.cleaned_data.get('password')
         if password:
             user.set_password(password)
+        else:
+            if user.pk:
+                old_user = CustomUser.objects.get(pk=user.pk)
+                user.password = old_user.password
         if commit:
             user.save()
         return user

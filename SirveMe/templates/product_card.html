@@ -1,0 +1,13 @@
+<div class="col-md-4 mb-4">
+    <a href="{% url 'producto_detalle' tipo producto.id %}" class="product-link">
+        <div class="card h-100">
+            {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text stock">Stock: {{ producto.cantidad }}</p>
+            </div>
+        </div>
+    </a>
+</div>

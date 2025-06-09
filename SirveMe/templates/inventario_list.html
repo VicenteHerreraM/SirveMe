@@ -2,6 +2,10 @@
 {% include 'header.html' %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <h2 class="my-4">Inventario</h2>
+<form method="get" class="mb-3 d-flex" role="search">
+    <input type="text" name="q" class="form-control me-2" placeholder="Buscar producto..." value="{{ request.GET.q }}">
+    <button type="submit" class="btn btn-outline-primary">Buscar</button>
+</form>
 <a href="{% url 'inventario_create' %}" class="btn btn-success mb-3">Agregar producto</a>
 <table class="table table-striped table-bordered align-middle">
     <thead class="table-dark">

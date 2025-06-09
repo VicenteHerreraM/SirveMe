@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Bebestibles, Entrada, PlatoDeFondo, Postre, Productos, Pedidos, Mesas, Inventario, AgregadoSalsa
 
-
 admin.site.register(Entrada)
 admin.site.register(PlatoDeFondo)
 admin.site.register(Postre)

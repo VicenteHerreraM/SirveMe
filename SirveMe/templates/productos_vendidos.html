@@ -1,0 +1,179 @@
+{% load static %}
+{% include 'header.html' %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<form method="get" class="row g-3 mb-4">
+    <div class="col-auto">
+        <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+    </div>
+    <div class="col-auto">
+        <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>
+
+<div class="card card-section">
+    <div class="card-header">
+        <h4 class="mb-0">Bebestibles</h4>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Unidades vendidas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in bebestibles %}
+                <tr>
+                    <td>{{ item.bebestible__nombre }}</td>
+                    <td>
+                        {{ item.total_vendidos }}
+                        {% if item.total_vendidos > 10 %}
+                            <span class="badge badge-total">Top ventas</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No hay ventas en este periodo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card card-section">
+    <div class="card-header">
+        <h4 class="mb-0">Entradas</h4>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Unidades vendidas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in entradas %}
+                <tr>
+                    <td>{{ item.entrada__nombre }}</td>
+                    <td>
+                        {{ item.total_vendidos }}
+                        {% if item.total_vendidos > 10 %}
+                            <span class="badge badge-total">Top ventas</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No hay ventas en este periodo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card card-section">
+    <div class="card-header">
+        <h4 class="mb-0">Platos de Fondo</h4>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Unidades vendidas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in fondos %}
+                <tr>
+                    <td>{{ item.platoDeFondo__nombre }}</td>
+                    <td>
+                        {{ item.total_vendidos }}
+                        {% if item.total_vendidos > 10 %}
+                            <span class="badge badge-total">Top ventas</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No hay ventas en este periodo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card card-section">
+    <div class="card-header">
+        <h4 class="mb-0">Postres</h4>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Unidades vendidas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in postres %}
+                <tr>
+                    <td>{{ item.postre__nombre }}</td>
+                    <td>
+                        {{ item.total_vendidos }}
+                        {% if item.total_vendidos > 10 %}
+                            <span class="badge badge-total">Top ventas</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No hay ventas en este periodo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card card-section">
+    <div class="card-header">
+        <h4 class="mb-0">Agregados/Salsas</h4>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-bordered mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Unidades vendidas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in agregados %}
+                <tr>
+                    <td>{{ item.agregadoSalsa__nombre }}</td>
+                    <td>
+                        {{ item.total_vendidos }}
+                        {% if item.total_vendidos > 10 %}
+                            <span class="badge badge-total">Top ventas</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No hay ventas en este periodo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

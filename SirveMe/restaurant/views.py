@@ -1,3 +1,5 @@
+from django.db.models import Q , Sum
+from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST
 from django.forms import modelformset_factory
@@ -5,15 +7,30 @@ from .models import Inventario, Entrada, PlatoDeFondo, Pedidos, DetallePedido, M
 from .models import Pedidos as Pedidos  
 from .forms import EntradaForm, PlatoDeFondoForm, PostreForm, InventarioForm , PedidoForm, DetallePedidoForm , PedidoProductoForm, MetodoEntregaForm
 from .decorators import role_required
-from datetime import datetime, date
+from datetime import datetime, date , time
 from users.models import CustomUser
+from restaurant.models import Productos
+
 
 @role_required(['mesero'])
 def homeWaiter(request):
     return render(request, 'homeWaiter.html')
 
+def reservas(request):
+    mesas = Mesas.objects.all()
+    if request.method == 'POST':
+        pass
+    return render(request, 'reservas.html', {'mesas': mesas})
+
 def inventario_list(request):
-    inventarios = Inventario.objects.all()
+    query = request.GET.get('q', '')
+    if query:
+        inventarios = Inventario.objects.filter(
+            Q(nombre__icontains=query) |
+            Q(descripcion__icontains=query)
+        )
+    else:
+        inventarios = Inventario.objects.all()
     return render(request, 'inventario_list.html', {'inventarios': inventarios})
 
 def inventario_create(request):
@@ -344,10 +361,12 @@ def checkout(request):
     return render(request, 'checkout_confirmacion.html', {'form': form, 'usuario': usuario})
 
 def atencion_mesas(request):
-    hoy = date.today()
+    hoy = timezone.localdate()
+    inicio = timezone.make_aware(datetime.combine(hoy, time.min))
+    fin = timezone.make_aware(datetime.combine(hoy, time.max))
     pedidos_listos = Pedidos.objects.filter(
         estado='listo',
-        fecha__date=hoy
+        fecha__range=(inicio, fin)
     ).select_related('fk_mesa')
     mesas = {}
     for pedido in pedidos_listos:
@@ -364,3 +383,60 @@ def finalizar_mesa(request, mesa_id):
     mesa.save()
     Pedidos.objects.filter(fk_mesa=mesa, estado='listo').update(estado='finalizado')
     return redirect('atencion_mesas')
+
+from django.db.models import Sum
+from .models import DetallePedido
+
+def productos_vendidos(request):
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    detalles = DetallePedido.objects.all()
+
+    if fecha_inicio and fecha_fin:
+        inicio = timezone.make_aware(datetime.combine(
+            datetime.strptime(fecha_inicio, "%Y-%m-%d"), time.min))
+        fin = timezone.make_aware(datetime.combine(
+            datetime.strptime(fecha_fin, "%Y-%m-%d"), time.max))
+        detalles = detalles.filter(
+            pedido__fecha__range=(inicio, fin)
+        )
+
+    bebestibles = detalles.filter(bebestible__isnull=False).values(
+        'bebestible__nombre'
+    ).annotate(
+        total_vendidos=Sum('cantidad')
+    ).order_by('-total_vendidos')
+
+    entradas = detalles.filter(entrada__isnull=False).values(
+        'entrada__nombre'
+    ).annotate(
+        total_vendidos=Sum('cantidad')
+    ).order_by('-total_vendidos')
+
+    fondos = detalles.filter(platoDeFondo__isnull=False).values(
+        'platoDeFondo__nombre'
+    ).annotate(
+        total_vendidos=Sum('cantidad')
+    ).order_by('-total_vendidos')
+
+    postres = detalles.filter(postre__isnull=False).values(
+        'postre__nombre'
+    ).annotate(
+        total_vendidos=Sum('cantidad')
+    ).order_by('-total_vendidos')
+
+    agregados = detalles.filter(agregadoSalsa__isnull=False).values(
+        'agregadoSalsa__nombre'
+    ).annotate(
+        total_vendidos=Sum('cantidad')
+    ).order_by('-total_vendidos')
+
+    return render(request, 'productos_vendidos.html', {
+        'bebestibles': bebestibles,
+        'entradas': entradas,
+        'fondos': fondos,
+        'postres': postres,
+        'agregados': agregados,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    })
