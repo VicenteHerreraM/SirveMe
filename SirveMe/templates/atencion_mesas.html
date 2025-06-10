@@ -20,18 +20,47 @@
                     </div>
                     <div class="card-body">
                         <div class="pedido-lista">
-                            <ul class="mb-2">
-                                {% for pedido in data.pedidos %}
-                                    <li>
-                                        <strong>Pedido #{{ pedido.id }}:</strong>
-                                        <ul>
-                                            {% for detalle in pedido.detalles.all %}
-                                                <li>{{ detalle.cantidad }} x {{ detalle.producto.nombre }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                           <ul class="mb-2">
+    {% for pedido in data.pedidos %}
+        <li>
+            <strong>Pedido #{{ pedido.id }}:</strong>
+            <ul>
+                {% for detalle in pedido.detalles.all %}
+                    {% if detalle.entrada %}
+                        <li>
+                            <span class="badge bg-secondary">{{ detalle.cantidad }}</span>
+                            {{ detalle.entrada.nombre }}
+                        </li>
+                    {% endif %}
+                    {% if detalle.platoDeFondo %}
+                        <li>
+                            <span class="badge bg-secondary">{{ detalle.cantidad }}</span>
+                            {{ detalle.platoDeFondo.nombre }}
+                        </li>
+                    {% endif %}
+                    {% if detalle.postre %}
+                        <li>
+                            <span class="badge bg-secondary">{{ detalle.cantidad }}</span>
+                            {{ detalle.postre.nombre }}
+                        </li>
+                    {% endif %}
+                    {% if detalle.bebestible %}
+                        <li>
+                            <span class="badge bg-secondary">{{ detalle.cantidad }}</span>
+                            {{ detalle.bebestible.nombre }}
+                        </li>
+                    {% endif %}
+                    {% if detalle.agregadoSalsa %}
+                        <li>
+                            <span class="badge bg-secondary">{{ detalle.cantidad }}</span>
+                            {{ detalle.agregadoSalsa.nombre }}
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
                         </div>
                         <p class="total-cuenta mb-3">Total cuenta: ${{ data.total }}</p>
                         <form method="post" action="{% url 'finalizar_mesa' mesa.idMesas %}">

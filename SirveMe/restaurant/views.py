@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.db.models import Q , Sum
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
@@ -364,6 +365,30 @@ def atencion_mesas(request):
     hoy = timezone.localdate()
     inicio = timezone.make_aware(datetime.combine(hoy, time.min))
     fin = timezone.make_aware(datetime.combine(hoy, time.max))
+    mesas = Mesas.objects.all() 
+    mesas_dict = {}
+    for mesa in mesas:
+        pedidos = mesa.pedidos_set.filter(estado='listo',fecha__range=(inicio, fin))
+        detalles_agrupados = defaultdict(int)
+        for pedido in pedidos:
+            for detalle in pedido.detalles.all():
+                if detalle.entrada:
+                    nombre = detalle.entrada.nombre
+                elif detalle.platoDeFondo:
+                    nombre = detalle.platoDeFondo.nombre
+                elif detalle.postre:
+                    nombre = detalle.postre.nombre
+                elif detalle.bebestible:
+                    nombre = detalle.bebestible.nombre
+                elif detalle.agregadoSalsa:
+                    nombre = detalle.agregadoSalsa.nombre
+                else:
+                    continue
+                detalles_agrupados[nombre] += detalle.cantidad
+        mesas_dict[mesa] = {
+            'pedidos': pedidos,
+            'detalles_agrupados': detalles_agrupados,
+        }
     pedidos_listos = Pedidos.objects.filter(
         estado='listo',
         fecha__range=(inicio, fin)
