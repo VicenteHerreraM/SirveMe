@@ -14,6 +14,7 @@ class Bebestibles(models.Model):
 class Postre(models.Model): 
     nombre = models.CharField(max_length=100)
     cantidad = models.IntegerField(null = True)
+    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
 
 
     def __str__(self):
@@ -37,6 +38,7 @@ class AgregadoSalsa(models.Model):
 class Entrada(models.Model):  
     nombre = models.CharField(max_length=100)
     cantidad = models.IntegerField(null = True)
+    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
 
     def __str__(self):
         return self.nombre
@@ -69,7 +71,7 @@ class Pedidos(models.Model):
     valor_finsemana = models.IntegerField(default=15990)
     valor_total = models.IntegerField(default=0)
     estado = models.CharField(max_length=45)
-    mesero = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE)
+    mesero = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE , null=True , blank=True) 
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  
@@ -93,7 +95,10 @@ class Pedidos(models.Model):
         return total
 
     def __str__(self):
-        return f"Orden para mesa {self.fk_mesa.numeroMesa} - Estado: {self.estado}"
+        if self.fk_mesa is None:
+            return f"Pedido en línea - Estado: {self.estado}"
+        else:
+            return f"Orden para mesa {self.fk_mesa.numeroMesa} - Estado: {self.estado}"
 
 class DetallePedido(models.Model):
     pedido = models.ForeignKey(Pedidos, related_name='detalles', on_delete=models.CASCADE)
@@ -106,7 +111,7 @@ class DetallePedido(models.Model):
     tipo = models.CharField(max_length=20 , null = True , blank = True)  #Posiblemente haya que eliminar esta variable
 
     def __str__(self):
-        return f"{self.producto} x{self.cantidad}"
+        return f"{self.entrada} - {self.platoDeFondo} - {self.agregadoSalsa} - {self.postre} - {self.bebestible} - x{self.cantidad}"
 
 class Inventario(models.Model):
     nombreProducto = models.CharField(max_length=100)

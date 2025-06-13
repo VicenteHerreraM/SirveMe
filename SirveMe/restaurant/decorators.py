@@ -10,6 +10,6 @@ def role_required(allowed_roles):
             if hasattr(request.user, 'rol') and request.user.rol in allowed_roles:
                 return view_func(request, *args, **kwargs)
             # Opcional: redirige a una página de acceso denegado o home
-            return redirect('home')
+            return redirect('denied')
         return _wrapped_view
     return decorator

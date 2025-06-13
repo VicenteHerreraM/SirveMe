@@ -2,6 +2,27 @@
 
 SirveMe es una aplicación diseñada para la administración de restaurantes, desarrollada principalmente en Python utilizando el framework Django.
 
+## Integrantes
+- Vicente Herrera
+
+## Tecnologías usadas
+Entre las tecnologias usadas para este proyecto se encuentran
+
+- Python 3.12  
+- MySQL Workbench
+- MySQL Server
+- Git
+
+## Requerimientos funcionales y no funcionales
+
+Los requerimientos funcionales y no funcionales mas importantes para este proyecto son los siguientes
+
+- Inicio de secion diferenciado: Dependiendo del usuario que ingrese en el login, apareceran distintas pantallas dependiendo si es un trabajador, administrador o cliente
+- Tienda en linea: Se podran realizar compras de productos de manera digital
+- Atencion de mesas: Los meseros podran tomar pedidos de manera digital y monitorear las diversas mesas que esten atendiendo
+- KDS: Los pedidos que se realizen por parte de los meseros, seran enviados a la pantalla de la cocina para ser preparados
+- Gestion de dueño: El dueño del local podra administrar apartados como el inventario, usuarios y ver productos vendidos en el tiempo. 
+
 > **Recomendación:**  
 > Se recomienda el uso de CMD en VS Code en vez de PowerShell para evitar problemas de entorno.
 
@@ -68,4 +89,4 @@ py manage.py runserver
 
 ---
 
-¡Listo! Ahora puedes acceder a SirveMe desde tu navegador en [http://localhost:8000](http://localhost:8000).
+Para acceder a la pagina, ingrese la siguiente direccion [http://127.0.0.1:8000/home/](http://127.0.0.1:8000/home/).

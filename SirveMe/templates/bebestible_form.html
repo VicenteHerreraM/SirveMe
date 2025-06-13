@@ -1,0 +1,17 @@
+{% load static %}
+{% include 'header.html' %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="mb-4">{% if bebestible %}Editar{% else %}Agregar{% endif %} Bebestible</h4>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">{% if bebestible %}Actualizar{% else %}Agregar{% endif %}</button>
+                <a href="{% url 'bebestible_list' %}" class="btn btn-secondary ms-2">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>

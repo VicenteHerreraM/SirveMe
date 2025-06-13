@@ -1,28 +1,45 @@
 {% load static %}
 {% include 'header.html' %}
+<script src="{% static 'direccion.js' %}"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <div class="container mt-5">
-    <h2>Dirección de entrega</h2>
-    {% if usuario %}
-        <form>
-            <div class="mb-3">
-                <label class="form-label">Región</label>
-                <input type="text" class="form-control" value="{{ usuario.region }}">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0 text-center">Dirección de entrega</h2>
+                </div>
+                <div class="card-body">
+                    {% if usuario %}
+                        <form method="post" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Región</label>
+                                <select id="region" name="region" class="form-select" required></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Comuna</label>
+                                <select id="comuna" name="comuna" class="form-select" required></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Ciudad</label>
+                                <select id="ciudad" name="ciudad" class="form-select" required></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Dirección</label>
+                                <input type="text" class="form-control" name="direccion" placeholder="Ej: Av. Siempre Viva 123" required>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-success btn-lg">Confirmar pedido</button>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="alert alert-warning text-center mb-0">
+                            No se encontró información de dirección para este usuario.
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Comuna</label>
-                <input type="text" class="form-control" value="{{ usuario.comuna }}">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Ciudad</label>
-                <input type="text" class="form-control" value="{{ usuario.ciudad }}">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Dirección</label>
-                <input type="text" class="form-control" value="{{ usuario.direccion }}">
-            </div>
-            <button type="submit" class="btn btn-success">Confirmar pedido</button>
-        </form>
-    {% else %}
-        <div class="alert alert-warning">No se encontró información de dirección para este usuario.</div>
-    {% endif %}
+        </div>
+    </div>
 </div>

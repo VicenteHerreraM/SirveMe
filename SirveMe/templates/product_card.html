@@ -1,13 +1,33 @@
+<!-- filepath: c:\Users\vice1\OneDrive\Documentos\Proyecto de titulo\SirveMe\templates\product_card.html -->
 <div class="col-md-4 mb-4">
-    <a href="{% url 'producto_detalle' tipo producto.id %}" class="product-link">
-        <div class="card h-100">
+    <div class="card h-100">
+        <a href="{% url 'producto_detalle' tipo producto.id %}" class="product-link">
             {% if producto.imagen %}
                 <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
             {% endif %}
             <div class="card-body">
                 <h5 class="card-title">{{ producto.nombre }}</h5>
                 <p class="card-text stock">Stock: {{ producto.cantidad }}</p>
+                <p class="card-text">
+                    Precio:
+                    {% if producto.precio %}
+                        ${{ producto.precio }}
+                    {% else %}
+                        {% if tipo == 'fondo' %}
+                            <span class="text-muted"></span>
+                        {% else %}
+                            <span class="text-muted">No disponible</span>
+                        {% endif %}
+                    {% endif %}
+                </p>
             </div>
+        </a>
+        <div class="card-footer bg-transparent border-0 text-center">
+            <form method="post" action="{% url 'agregar_al_carro' tipo producto.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="cantidad" value="1">
+                <button type="submit" class="btn btn-success">Agregar al carro</button>
+            </form>
         </div>
-    </a>
+    </div>
 </div>

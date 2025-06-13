@@ -1,6 +1,7 @@
 {% load static %}
 {% include 'header.html' %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <form method="get" class="row g-3 mb-4">
     <div class="col-auto">
         <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
@@ -12,168 +13,118 @@
         <button type="submit" class="btn btn-primary">Filtrar</button>
     </div>
 </form>
-
-<div class="card card-section">
-    <div class="card-header">
-        <h4 class="mb-0">Bebestibles</h4>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6 mb-4 text-center">
+            <h5>Bebestibles - Gráfico</h5>
+            <canvas id="graficoBebestibles" style="max-width:350px; max-height:350px;"></canvas>
+        </div>
+        <div class="col-md-6 mb-4 text-center">
+            <h5>Entradas - Gráfico</h5>
+            <canvas id="graficoEntradas" style="max-width:350px; max-height:350px;"></canvas>
+        </div>
     </div>
-    <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Unidades vendidas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in bebestibles %}
-                <tr>
-                    <td>{{ item.bebestible__nombre }}</td>
-                    <td>
-                        {{ item.total_vendidos }}
-                        {% if item.total_vendidos > 10 %}
-                            <span class="badge badge-total">Top ventas</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">No hay ventas en este periodo.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-6 mb-4 text-center">
+            <h5>Platos de Fondo - Gráfico</h5>
+            <canvas id="graficoFondos" style="max-width:350px; max-height:350px;"></canvas>
+        </div>
+        <div class="col-md-6 mb-4 text-center">
+            <h5>Postres - Gráfico</h5>
+            <canvas id="graficoPostres" style="max-width:350px; max-height:350px;"></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4 text-center">
+            <h5>Agregados/Salsas - Gráfico</h5>
+            <canvas id="graficoAgregados" style="max-width:350px; max-height:350px;"></canvas>
+        </div>
     </div>
 </div>
-
-<div class="card card-section">
-    <div class="card-header">
-        <h4 class="mb-0">Entradas</h4>
-    </div>
-    <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Unidades vendidas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in entradas %}
-                <tr>
-                    <td>{{ item.entrada__nombre }}</td>
-                    <td>
-                        {{ item.total_vendidos }}
-                        {% if item.total_vendidos > 10 %}
-                            <span class="badge badge-total">Top ventas</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">No hay ventas en este periodo.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="card card-section">
-    <div class="card-header">
-        <h4 class="mb-0">Platos de Fondo</h4>
-    </div>
-    <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Unidades vendidas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in fondos %}
-                <tr>
-                    <td>{{ item.platoDeFondo__nombre }}</td>
-                    <td>
-                        {{ item.total_vendidos }}
-                        {% if item.total_vendidos > 10 %}
-                            <span class="badge badge-total">Top ventas</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">No hay ventas en este periodo.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="card card-section">
-    <div class="card-header">
-        <h4 class="mb-0">Postres</h4>
-    </div>
-    <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Unidades vendidas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in postres %}
-                <tr>
-                    <td>{{ item.postre__nombre }}</td>
-                    <td>
-                        {{ item.total_vendidos }}
-                        {% if item.total_vendidos > 10 %}
-                            <span class="badge badge-total">Top ventas</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">No hay ventas en este periodo.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="card card-section">
-    <div class="card-header">
-        <h4 class="mb-0">Agregados/Salsas</h4>
-    </div>
-    <div class="card-body p-0">
-        <table class="table table-bordered mb-0">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Unidades vendidas</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in agregados %}
-                <tr>
-                    <td>{{ item.agregadoSalsa__nombre }}</td>
-                    <td>
-                        {{ item.total_vendidos }}
-                        {% if item.total_vendidos > 10 %}
-                            <span class="badge badge-total">Top ventas</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">No hay ventas en este periodo.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+<script>
+    const entradasLabels = [{% for item in entradas %}'{{ item.entrada__nombre }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const entradasData = [{% for item in entradas %}{{ item.total_vendidos }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    new Chart(document.getElementById('graficoEntradas'), {
+        type: 'bar',
+        data: {
+            labels: entradasLabels,
+            datasets: [{
+                label: 'Unidades vendidas',
+                data: entradasData,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+    const bebestiblesLabels = [{% for item in bebestibles %}'{{ item.bebestible__nombre }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const bebestiblesData = [{% for item in bebestibles %}{{ item.total_vendidos }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    new Chart(document.getElementById('graficoBebestibles'), {
+        type: 'bar',
+        data: {
+            labels: bebestiblesLabels,
+            datasets: [{
+                label: 'Unidades vendidas',
+                data: bebestiblesData,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+    const fondosLabels = [{% for item in fondos %}'{{ item.platoDeFondo__nombre }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const fondosData = [{% for item in fondos %}{{ item.total_vendidos }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    new Chart(document.getElementById('graficoFondos'), {
+        type: 'bar',
+        data: {
+            labels: fondosLabels,
+            datasets: [{
+                label: 'Unidades vendidas',
+                data: fondosData,
+                backgroundColor: 'rgba(255, 206, 86, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+    const postresLabels = [{% for item in postres %}'{{ item.postre__nombre }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const postresData = [{% for item in postres %}{{ item.total_vendidos }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    new Chart(document.getElementById('graficoPostres'), {
+        type: 'bar',
+        data: {
+            labels: postresLabels,
+            datasets: [{
+                label: 'Unidades vendidas',
+                data: postresData,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+    const agregadosLabels = [{% for item in agregados %}'{{ item.agregadoSalsa__nombre }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+    const agregadosData = [{% for item in agregados %}{{ item.total_vendidos }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    new Chart(document.getElementById('graficoAgregados'), {
+        type: 'bar',
+        data: {
+            labels: agregadosLabels,
+            datasets: [{
+                label: 'Unidades vendidas',
+                data: agregadosData,
+                backgroundColor: 'rgba(153, 102, 255, 0.6)'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>

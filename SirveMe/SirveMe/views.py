@@ -33,7 +33,7 @@ def login_view(request):
                 if user.rol == 'mesero':
                     return redirect('homeWaiter')
                 elif user.rol == 'cocinero':
-                    return redirect('kds')
+                    return redirect('home_cocinero')
                 elif user.rol == 'cliente':
                     return redirect('store')
             return redirect('home')

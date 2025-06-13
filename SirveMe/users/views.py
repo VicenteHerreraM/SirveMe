@@ -3,8 +3,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import CustomUser, Mesas
 from .forms import CustomUserForm,  ClienteRegistroForm
 
+#Obtiene los usuarios que estan inscritos en la base de datos
 def usuarios_list(request):
     query = request.GET.get('q', '')
+    #Esta funcion permite buscar usuarios por email, rut, rol, direccion, comuna o ciudad
     if query:
         usuarios = CustomUser.objects.filter(
             Q(email__icontains=query) |
@@ -18,6 +20,7 @@ def usuarios_list(request):
         usuarios = CustomUser.objects.all()
     return render(request, 'usuarios_list.html', {'usuarios': usuarios})
 
+#Permite crear 
 def usuario_create(request):
     if request.method == 'POST':
         form = CustomUserForm(request.POST)
@@ -26,8 +29,9 @@ def usuario_create(request):
             return redirect('usuarios_list')
     else:
         form = CustomUserForm()
-    return render(request, 'usuario_form.html', {'form': form})
+    return render(request, 'usuario_form.html', {'form': form})#
 
+#Permite actualizar datos de usuarios ya inscritos en la aplicacion
 def usuario_update(request, pk):
     usuario = get_object_or_404(CustomUser, pk=pk)
     if request.method == 'POST':
@@ -39,6 +43,7 @@ def usuario_update(request, pk):
         form = CustomUserForm(instance=usuario)
     return render(request, 'usuario_form.html', {'form': form})
 
+#Elimina usuario de la base de datos
 def usuario_delete(request, pk):
     usuario = get_object_or_404(CustomUser, pk=pk)
     if request.method == 'POST':
@@ -46,6 +51,7 @@ def usuario_delete(request, pk):
         return redirect('usuarios_list')
     return render(request, 'usuario_confirm_delete.html', {'usuario': usuario})
 
+#Permite registrar nuevos usuarios como clientes
 def registrate(request):
     if request.method == 'POST':
         form = ClienteRegistroForm(request.POST)

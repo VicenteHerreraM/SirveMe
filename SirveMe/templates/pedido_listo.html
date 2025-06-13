@@ -1,0 +1,11 @@
+<!-- filepath: c:\Users\vice1\OneDrive\Documentos\Proyecto de titulo\SirveMe\templates\pedido_listo.html -->
+{% load static %}
+{% include 'header.html' %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<div class="container mt-5">
+    <div class="alert alert-success text-center shadow-sm">
+        <h3 class="mb-3">¡Pedido marcado como listo!</h3>
+        <p>El pedido ha sido actualizado correctamente y ya no aparecerá en la lista de pedidos en línea.</p>
+        <a href="{% url 'pedidos_en_linea' %}" class="btn btn-primary mt-3">Volver a pedidos en línea</a>
+    </div>
+</div>

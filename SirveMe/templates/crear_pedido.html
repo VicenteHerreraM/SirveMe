@@ -19,7 +19,6 @@
                     <th>Postre</th>
                     <th>Bebestible</th>
                     <th>Cantidad</th>
-                    <th>Eliminar</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,11 +32,6 @@
                     <td>{{ form.postre }}</td>
                     <td>{{ form.bebestible }}</td>
                     <td>{{ form.cantidad }}</td>
-                    <td>
-                        {% if formset.can_delete %}
-                            {{ form.DELETE }}
-                        {% endif %}
-                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,0 +1,22 @@
+{% load static %}
+{% include 'header.html' %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Panel Mesero</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static '/styles.css' %}">
+</head>
+<body>
+    <div class="content-waiter">
+        <div class="button-container">
+            <a href="/KDS" class="cuadro-link">Pantalla de cocinero<br>(KDS)</a>
+            <a href="/inventario" class="cuadro-link">Modificar<br>inventario</a>
+            <a href="/pedidos-en-linea" class="cuadro-link">Pedidos<br>Online</a>
+        </div>
+    </div>
+</body>
+</html>

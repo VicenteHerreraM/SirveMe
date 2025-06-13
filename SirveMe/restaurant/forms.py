@@ -25,7 +25,7 @@ class EntradaForm(forms.ModelForm):
 class PlatoDeFondoForm(forms.ModelForm):
     class Meta:
         model = PlatoDeFondo
-        fields = ['nombre' , 'cantidad']
+        fields = ['nombre' , 'cantidad' , 'imagen']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'cantidad': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -48,6 +48,15 @@ class AgregadoSalsaForm(forms.ModelForm):
             'cantidad': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+class BebestiblesForm(forms.ModelForm):
+    class Meta:
+        model = Bebestibles
+        fields = ['nombre', 'cantidad', 'precio' , 'imagen']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'precio': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedidos

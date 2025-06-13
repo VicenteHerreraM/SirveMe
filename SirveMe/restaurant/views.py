@@ -6,12 +6,17 @@ from django.views.decorators.http import require_POST
 from django.forms import modelformset_factory
 from .models import Inventario, Entrada, PlatoDeFondo, Pedidos, DetallePedido, Mesas , AgregadoSalsa , Postre , Bebestibles
 from .models import Pedidos as Pedidos  
-from .forms import EntradaForm, PlatoDeFondoForm, PostreForm, InventarioForm , PedidoForm, DetallePedidoForm , PedidoProductoForm, MetodoEntregaForm
+from .forms import EntradaForm, PlatoDeFondoForm, PostreForm, InventarioForm , PedidoForm, DetallePedidoForm , PedidoProductoForm, MetodoEntregaForm , AgregadoSalsaForm, BebestiblesForm
 from .decorators import role_required
 from datetime import datetime, date , time
 from users.models import CustomUser
 from restaurant.models import Productos
 
+def home(request):
+    return render(request,'home.html')
+
+def denied(request):
+    return render(request,'denied.html')
 
 @role_required(['mesero'])
 def homeWaiter(request):
@@ -23,18 +28,23 @@ def reservas(request):
         pass
     return render(request, 'reservas.html', {'mesas': mesas})
 
+@role_required(['admin', 'cocinero'])
 def inventario_list(request):
     query = request.GET.get('q', '')
     if query:
         inventarios = Inventario.objects.filter(
-            Q(nombre__icontains=query) |
-            Q(descripcion__icontains=query)
+            Q(nombreProducto__icontains=query)|
+            Q(marca__icontains=query)
         )
     else:
         inventarios = Inventario.objects.all()
     return render(request, 'inventario_list.html', {'inventarios': inventarios})
 
+
+#CRUD de inventario
+@role_required(['admin', 'cocinero'])
 def inventario_create(request):
+    
     if request.method == 'POST':
         form = InventarioForm(request.POST)
         if form.is_valid():
@@ -44,6 +54,8 @@ def inventario_create(request):
         form = InventarioForm()
     return render(request, 'inventario_form.html', {'form': form})
 
+
+@role_required(['admin', 'cocinero'])
 def inventario_update(request, pk):
     inventario = get_object_or_404(Inventario, pk=pk)
     if request.method == 'POST':
@@ -55,6 +67,7 @@ def inventario_update(request, pk):
         form = InventarioForm(instance=inventario)
     return render(request, 'inventario_form.html', {'form': form})
 
+@role_required(['admin', 'cocinero'])
 def inventario_delete(request, pk):
     inventario = get_object_or_404(Inventario, pk=pk)
     if request.method == 'POST':
@@ -62,10 +75,14 @@ def inventario_delete(request, pk):
         return redirect('inventario_list')
     return render(request, 'inventario_confirm_delete.html', {'inventario': inventario})
 
+#CRUD de entradas
+@role_required(['admin', 'mesero'])
 def entrada_list(request):
+    print("ROL:", request.user.rol)
     entradas = Entrada.objects.all()
     return render(request, 'entrada_list.html', {'entradas': entradas})
 
+@role_required(['admin', 'mesero'])
 def entrada_create(request):
     if request.method == 'POST':
         form = EntradaForm(request.POST)
@@ -76,6 +93,7 @@ def entrada_create(request):
         form = EntradaForm()
     return render(request, 'entrada_form.html', {'form': form})
 
+@role_required(['admin', 'mesero'])
 def entrada_update(request, pk):
     entrada = get_object_or_404(Entrada, pk=pk)
     if request.method == 'POST':
@@ -87,6 +105,7 @@ def entrada_update(request, pk):
         form = EntradaForm(instance=entrada)
     return render(request, 'entrada_form.html', {'form': form})
 
+@role_required(['admin', 'mesero'])
 def entrada_delete(request, pk):
     entrada = get_object_or_404(Entrada, pk=pk)
     if request.method == 'POST':
@@ -94,13 +113,16 @@ def entrada_delete(request, pk):
         return redirect('entrada_list')
     return render(request, 'entrada_delete.html', {'entrada': entrada})
 
+#CRUD de Plato de Fondo
+@role_required(['admin', 'mesero'])
 def platodefondo_list(request):
     fondo = PlatoDeFondo.objects.all()
     return render(request, 'fondo_list.html', {'fondos': fondo})
 
+@role_required(['admin', 'mesero'])
 def platodefondo_create(request):
     if request.method == 'POST':
-        form = PlatoDeFondoForm(request.POST)
+        form = PlatoDeFondoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('fondo_list')
@@ -108,10 +130,11 @@ def platodefondo_create(request):
         form = PlatoDeFondoForm()
     return render(request, 'fondo_form.html', {'form': form})
 
+@role_required(['admin', 'mesero'])
 def platodefondo_update(request, pk):
     fondo = get_object_or_404(PlatoDeFondo, pk=pk)
     if request.method == 'POST':
-        form = PlatoDeFondoForm(request.POST, instance=fondo)
+        form = PlatoDeFondoForm(request.POST,request.FILES, instance=fondo)
         if form.is_valid():
             form.save()
             return redirect('fondo_list')
@@ -119,6 +142,7 @@ def platodefondo_update(request, pk):
         form = PlatoDeFondoForm(instance=fondo)
     return render(request, 'fondo_form.html', {'form': form})
 
+@role_required(['admin', 'mesero'])
 def platodefondo_delete(request, pk):
     fondo = get_object_or_404(PlatoDeFondo, pk=pk)
     if request.method == 'POST':
@@ -126,10 +150,14 @@ def platodefondo_delete(request, pk):
         return redirect('fondo_list')
     return render(request, 'fondo_delete.html', {'fondos': fondo})
 
+
+#CRUD de Postres
+@role_required(['admin', 'mesero'])
 def postre_list(request):
     postre = Postre.objects.all()
     return render(request, 'postre_list.html', {'postres': postre})
 
+@role_required(['admin', 'mesero'])
 def postre_create(request):
     if request.method == 'POST':
         form = PostreForm(request.POST)
@@ -140,6 +168,7 @@ def postre_create(request):
         form = PostreForm()
     return render(request, 'postre_form.html', {'form': form})
 
+@role_required(['admin', 'mesero'])
 def postre_update(request, pk):
     postre = get_object_or_404(Postre, pk=pk)
     if request.method == 'POST':
@@ -151,6 +180,7 @@ def postre_update(request, pk):
         form = PostreForm(instance=postre)
     return render(request, 'postre_form.html', {'form': form})
 
+@role_required(['admin', 'mesero'])
 def postre_delete(request, pk):
     postre = get_object_or_404(Postre, pk=pk)
     if request.method == 'POST':
@@ -158,7 +188,82 @@ def postre_delete(request, pk):
         return redirect('postre_list')
     return render(request, 'postre_delete.html', {'postres': postre})
 
+#CRUD de agreagdos
+@role_required(['admin', 'mesero'])
+def agregado_list(request):
+    agregado = AgregadoSalsa.objects.all()
+    return render(request, 'agregado_list.html', {'agregados': agregado})
 
+# CRUD de Bebestibles
+
+@role_required(['admin', 'mesero'])
+def bebestible_list(request):
+    bebestible = Bebestibles.objects.all()
+    return render(request, 'bebestible_list.html', {'bebestibles': bebestible})
+
+@role_required(['admin', 'mesero'])
+def bebestible_create(request):
+    if request.method == 'POST':
+        form = BebestiblesForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('bebestible_list')
+    else:
+        form = BebestiblesForm()
+    return render(request, 'bebestible_form.html', {'form': form})
+
+@role_required(['admin', 'mesero'])
+def bebestible_update(request, pk):
+    bebestible = get_object_or_404(Bebestibles, pk=pk)
+    if request.method == 'POST':
+        form = BebestiblesForm(request.POST,  request.FILES, instance=bebestible)
+        if form.is_valid():
+            form.save()
+            return redirect('bebestible_list')
+    else:
+        form = BebestiblesForm(instance=bebestible)
+    return render(request, 'bebestible_form.html', {'form': form, 'bebestible': bebestible})
+
+@role_required(['admin', 'mesero'])
+def bebestible_delete(request, pk):
+    bebestible = get_object_or_404(Bebestibles, pk=pk)
+    if request.method == 'POST':
+        bebestible.delete()
+        return redirect('bebestible_list')
+    return render(request, 'bebestible_delete.html', {'bebestible': bebestible})
+
+
+@role_required(['mesero'])
+def agregado_create(request):
+    if request.method == 'POST':
+        form = AgregadoSalsaForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('agregado_list')
+    else:
+        form = AgregadoSalsaForm()
+    return render(request, 'agregado_form.html', {'form': form})
+
+def agregado_update(request, pk):
+    AgregadoSalsa = get_object_or_404(AgregadoSalsa, pk=pk)
+    if request.method == 'POST':
+        form = AgregadoSalsaForm(request.POST, instance=AgregadoSalsa)
+        if form.is_valid():
+            form.save()
+            return redirect('agregado_list')
+    else:
+        form = AgregadoSalsaForm(instance=AgregadoSalsa)
+    return render(request, 'agregado_form.html', {'form': form})
+
+def agregado_delete(request, pk):
+    agregado = get_object_or_404(AgregadoSalsa, pk=pk)
+    if request.method == 'POST':
+        agregado.delete()
+        return redirect('agregado_list')
+    return render(request, 'agregado_delete.html', {'agregados': agregado})
+
+#Realiza la creacion de un pedido para los clientes
+@role_required(['mesero'])
 def crear_pedido(request):
     DetallePedidoFormSet = modelformset_factory(DetallePedido, form=DetallePedidoForm, extra=1, can_delete=True)
     mesa_id = request.GET.get('mesa_id')
@@ -207,13 +312,22 @@ def crear_pedido(request):
         'pedido_form': pedido_form,
         'formset': formset
     })
+    
+@role_required(['cocinero'])
+def home_cocinero(request):
+    pedidos = Pedidos.objects.filter(estado='pendiente').prefetch_related('detalles')
+    return render(request, 'home_cocinero.html', {'pedidos': pedidos})
+
 @role_required(['cocinero'])
 def kds(request):
     pedidos = Pedidos.objects.filter(estado='pendiente').prefetch_related('detalles')
-    return render(request, 'KDS.html', {'pedidos': pedidos})
+    return render(request, 'kds.html', {'pedidos': pedidos})
+
 @require_POST
+@role_required(['cocinero'])
 def pedido_listo(request, pedido_id):
     pedido = get_object_or_404(Pedidos, id=pedido_id)
+    #Descuenta las cantidades de los productos del inventario
     for detalle in pedido.detalles.all():
         if detalle.entrada:
             detalle.entrada.cantidad -= detalle.cantidad
@@ -234,6 +348,14 @@ def pedido_listo(request, pedido_id):
     pedido.save()
     return redirect('kds')
 
+@require_POST
+@role_required(['cocinero'])
+def pedido_online_listo(request, pedido_id):
+    pedido = get_object_or_404(Pedidos, id=pedido_id)
+    pedido.estado = 'Finalizado'
+    pedido.save()
+    return redirect('pedidos_en_linea')
+
 
 def visor_mesas(request):
     mesas = Mesas.objects.all()
@@ -246,7 +368,7 @@ def store(request):
         'bebestibles': bebestibles,
         'fondos': fondos,
     })
-    
+
 def producto_detalle(request, tipo, pk):
     if tipo == "bebestible":
         producto = Bebestibles.objects.get(pk=pk)
@@ -345,31 +467,215 @@ def eliminar_del_carro(request, idx):
             request.session.modified = True
     return redirect('ver_carro')
 
+
+@role_required(['cliente'])
 def checkout(request):
-    usuario = None
-    if request.user.is_authenticated:
-        usuario = CustomUser.objects.filter(email=request.user.email).first()
+    usuario = request.user
+    carro = request.session.get('carro', [])
+    if not carro:
+        return render(request, 'checkout_confirmacion.html', {
+            'usuario': usuario,
+            'mensaje': 'No hay productos en el carro.'
+        })
+
     if request.method == 'POST':
         form = MetodoEntregaForm(request.POST)
         if form.is_valid():
             metodo = form.cleaned_data['metodo']
             if metodo == 'domicilio':
-                return render(request, 'checkout_direccion.html', {'usuario': usuario})
+                return redirect('checkout_direccion')
             else:
-                return render(request, 'checkout_confirmacion.html', {'metodo': 'retiro'})
+                return render(request, 'checkout_confirmacion.html', {
+                    'usuario': usuario,
+                    'metodo': 'retiro',
+                    'carro': carro
+                })
     else:
         form = MetodoEntregaForm()
-    return render(request, 'checkout_confirmacion.html', {'form': form, 'usuario': usuario})
 
+    return render(request, 'checkout.html', {
+        'form': form,
+        'usuario': usuario,
+        'carro': carro
+    })
+
+#Funcion encargada de hacer la finalizacion de la venta en linea
+@role_required(['cliente'])
+def checkout_direccion(request):
+    usuario = request.user
+    if request.method == 'POST':
+        #Agrega o actualiza la direccion del usuario
+        region = request.POST.get('region')
+        comuna = request.POST.get('comuna')
+        ciudad = request.POST.get('ciudad')
+        direccion = request.POST.get('direccion')
+        usuario.region = region
+        usuario.comuna = comuna
+        usuario.ciudad = ciudad
+        usuario.direccion = direccion
+        usuario.save()
+        carro = request.session.get('carro', [])
+        if not carro:
+            return render(request, 'checkout_confirmacion.html', {
+                'usuario': usuario,
+                'mensaje': 'No hay productos en el carro.'
+            })
+        pedido = Pedidos.objects.create(
+            estado='en linea',  
+            fecha=timezone.now()
+        )
+        #Revisa los productos que estan en el carro y crea los detalles del pedido
+        for item in carro:
+            producto_id = item['producto_id']
+            cantidad = int(item['cantidad'])
+            tipo = item['tipo']
+            if tipo == 'bebestible':
+                producto = Bebestibles.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    bebestible=producto,
+                    cantidad=cantidad,
+                    tipo='bebestible'
+                )
+            elif tipo == 'fondo':
+                producto = PlatoDeFondo.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    platoDeFondo=producto,
+                    cantidad=cantidad,
+                    tipo='fondo'
+                )
+            elif tipo == 'entrada':
+                producto = Entrada.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    entrada=producto,
+                    cantidad=cantidad,
+                    tipo='entrada'
+                )
+            elif tipo == 'agregado':
+                producto = AgregadoSalsa.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    agregadoSalsa=producto,
+                    cantidad=cantidad,
+                    tipo='agregado'
+                )
+            elif tipo == 'postre':
+                producto = Postre.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    postre=producto,
+                    cantidad=cantidad,
+                    tipo='postre'
+                )
+        #Limpia el carro de compras del cliente
+        request.session['carro'] = []
+        request.session.modified = True
+        return render(request, 'checkout_confirmacion.html', {'usuario': usuario, 'pedido': pedido})
+    return render(request, 'checkout_direccion.html', {'usuario': usuario})
+
+#Muy similar a la funcion anterior, pero no guarda direccion de usuario
+@role_required(['cliente'])
+def checkout_presencial(request):
+    usuario = request.user
+    carro = request.session.get('carro', [])
+    if not carro:
+        return render(request, 'checkout_confirmacion.html', {
+            'usuario': usuario,
+            'mensaje': 'No hay productos en el carro.'
+        })
+    pedido = Pedidos.objects.create(
+        estado='En preparacion',
+        fecha=timezone.now()
+    )
+    for item in carro:
+        producto_id = item['producto_id']
+        cantidad = int(item['cantidad'])
+        tipo = item['tipo']
+        if tipo == 'bebestible':
+            producto = Bebestibles.objects.get(pk=producto_id)
+            producto.cantidad -= cantidad
+            producto.save()
+            DetallePedido.objects.create(
+                pedido=pedido,
+                bebestible=producto,
+                cantidad=cantidad,
+                tipo='bebestible'
+            )
+        elif tipo == 'fondo':
+            producto = PlatoDeFondo.objects.get(pk=producto_id)
+            producto.cantidad -= cantidad
+            producto.save()
+            DetallePedido.objects.create(
+                pedido=pedido,
+                platoDeFondo=producto,
+                cantidad=cantidad,
+                tipo='fondo'
+            )
+        elif tipo == 'entrada':
+            producto = Entrada.objects.get(pk=producto_id)
+            producto.cantidad -= cantidad
+            producto.save()
+            DetallePedido.objects.create(
+                pedido=pedido,
+                entrada=producto,
+                cantidad=cantidad,
+                tipo='entrada'
+            )
+        elif tipo == 'agregado':
+            producto = AgregadoSalsa.objects.get(pk=producto_id)
+            producto.cantidad -= cantidad
+            producto.save()
+            DetallePedido.objects.create(
+                pedido=pedido,
+                agregadoSalsa=producto,
+                cantidad=cantidad,
+                tipo='agregado'
+            )
+        elif tipo == 'postre':
+            producto = Postre.objects.get(pk=producto_id)
+            producto.cantidad -= cantidad
+            producto.save()
+            DetallePedido.objects.create(
+                pedido=pedido,
+                postre=producto,
+                cantidad=cantidad,
+                tipo='postre'
+            )
+    request.session['carro'] = []
+    request.session.modified = True
+    return render(request, 'checkout_confirmacion.html', {'usuario': usuario, 'pedido': pedido})
+
+def pedidos_en_linea(request):
+    pedidos = Pedidos.objects.filter(estado='en linea').prefetch_related('detalles')
+    print("Pedidos en línea:", pedidos.count())
+    return render(request, 'pedidos_en_linea.html', {'pedidos': pedidos})
+
+#Funcion para atender las mesas del restaurante
+
+@role_required(['mesero'])
 def atencion_mesas(request):
     hoy = timezone.localdate()
     inicio = timezone.make_aware(datetime.combine(hoy, time.min))
     fin = timezone.make_aware(datetime.combine(hoy, time.max))
     mesas = Mesas.objects.all() 
     mesas_dict = {}
+    #Iteracion para ver las mesas
     for mesa in mesas:
         pedidos = mesa.pedidos_set.filter(estado='listo',fecha__range=(inicio, fin))
         detalles_agrupados = defaultdict(int)
+        #
         for pedido in pedidos:
             for detalle in pedido.detalles.all():
                 if detalle.entrada:
@@ -402,6 +708,7 @@ def atencion_mesas(request):
         mesas[mesa]['total'] += pedido.valor_total
     return render(request, 'atencion_mesas.html', {'mesas': mesas})
 
+@role_required(['mesero'])
 def finalizar_mesa(request, mesa_id):
     mesa = get_object_or_404(Mesas, idMesas=mesa_id)
     mesa.estado = True
@@ -409,14 +716,13 @@ def finalizar_mesa(request, mesa_id):
     Pedidos.objects.filter(fk_mesa=mesa, estado='listo').update(estado='finalizado')
     return redirect('atencion_mesas')
 
-from django.db.models import Sum
-from .models import DetallePedido
-
+#Esta funcion obtiene todos los productos y articulos que se han vendido a lo largo del tiempo
+@role_required(['admin'])
 def productos_vendidos(request):
     fecha_inicio = request.GET.get('fecha_inicio')
     fecha_fin = request.GET.get('fecha_fin')
     detalles = DetallePedido.objects.all()
-
+    #Filtrado por fechas de inicio y fin
     if fecha_inicio and fecha_fin:
         inicio = timezone.make_aware(datetime.combine(
             datetime.strptime(fecha_inicio, "%Y-%m-%d"), time.min))
@@ -425,7 +731,8 @@ def productos_vendidos(request):
         detalles = detalles.filter(
             pedido__fecha__range=(inicio, fin)
         )
-
+    # Filtrado de productos vendidos
+    # Agrupando por tipo de producto y sumando las cantidades vendidas
     bebestibles = detalles.filter(bebestible__isnull=False).values(
         'bebestible__nombre'
     ).annotate(
@@ -455,7 +762,7 @@ def productos_vendidos(request):
     ).annotate(
         total_vendidos=Sum('cantidad')
     ).order_by('-total_vendidos')
-
+    #Muestra los productos vendidos en la pagina 
     return render(request, 'productos_vendidos.html', {
         'bebestibles': bebestibles,
         'entradas': entradas,
@@ -464,4 +771,20 @@ def productos_vendidos(request):
         'agregados': agregados,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
+    })
+    
+
+@role_required(['admin'])
+def admin_productos(request):
+    bebestibles = Bebestibles.objects.all()
+    entradas = Entrada.objects.all()
+    fondos = PlatoDeFondo.objects.all()
+    postres = Postre.objects.all()
+    agregados = AgregadoSalsa.objects.all()
+    return render(request, 'admin_productos.html', {
+        'bebestibles': bebestibles,
+        'entradas': entradas,
+        'fondos': fondos,
+        'postres': postres,
+        'agregados': agregados,
     })

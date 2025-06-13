@@ -2,6 +2,7 @@ from django import forms
 from .models import CustomUser
 from django.contrib.auth.forms import UserCreationForm
 
+#Modelo personalizado del 
 class CustomUserForm(forms.ModelForm):
     password = forms.CharField(
         label='Contraseña',
@@ -35,7 +36,8 @@ class CustomUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-    
+
+#Formulario para registrar a los clientes en el apartado de registrarse
 class ClienteRegistroForm(UserCreationForm):
     class Meta:
         model = CustomUser
