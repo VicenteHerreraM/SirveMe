@@ -102,3 +102,12 @@ Para iniciar secion, he ingresado perfiles de prueba que contienen los siguiente
 - bbb@gmail.com - 1q2w3e (Mesero)
 - ccc@gmail.com - 1q2w3e (Cocinero)
 - ddd@gmail.com - 1q2w3e (Cliente)
+
+En caso de no haber un administrador en la base de datos, se tiene que crear con el siguiente comando
+
+```sh
+py manage.py createsuperuser
+```
+
+Después, hay que dirigirse al administrador de base de datos de Django [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/), ingresar los datos previamente registrados, acceder al apartado de "Users" y en el perfil creado, se debe acceder y cambiar el rol a "Administrador".
+Con lo anteriormente mencionado, ya podra ingresar desde la pagina web
