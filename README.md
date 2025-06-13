@@ -16,13 +16,20 @@ Entre las tecnologias usadas para este proyecto se encuentran
 
 ## Requerimientos funcionales y no funcionales
 
-Los requerimientos funcionales y no funcionales mas importantes para este proyecto son los siguientes
+Los requerimientos funcionales más importantes para este proyecto son los siguientes
 
 - Inicio de secion diferenciado: Dependiendo del usuario que ingrese en el login, apareceran distintas pantallas dependiendo si es un trabajador, administrador o cliente
 - Tienda en linea: Se podran realizar compras de productos de manera digital
 - Atencion de mesas: Los meseros podran tomar pedidos de manera digital y monitorear las diversas mesas que esten atendiendo
 - KDS: Los pedidos que se realizen por parte de los meseros, seran enviados a la pantalla de la cocina para ser preparados
 - Gestion de dueño: El dueño del local podra administrar apartados como el inventario, usuarios y ver productos vendidos en el tiempo. 
+
+Y los no funcionales más importantes serian
+
+- Integridad del sistema: Realize las transacciones de manera precisa y consistente
+- Interfaz de usuario dinamica: Sea adaptable tanto en dispositivos móviles como en computadoras de escritorio
+- Seguridad del sistema: Encriptacion de datos como contraseñas
+
 
 > **Recomendación:**  
 > Se recomienda el uso de CMD en VS Code en vez de PowerShell para evitar problemas de entorno.
