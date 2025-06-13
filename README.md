@@ -12,6 +12,7 @@ Entre las tecnologias usadas para este proyecto se encuentran
 - MySQL Workbench
 - MySQL Server
 - Git
+- VSCode
 
 ## Requerimientos funcionales y no funcionales
 
@@ -90,3 +91,14 @@ py manage.py runserver
 ---
 
 Para acceder a la pagina, ingrese la siguiente direccion [http://127.0.0.1:8000/home/](http://127.0.0.1:8000/home/).
+
+---
+
+## Inicio de secion y perfiles
+
+Para iniciar secion, he ingresado perfiles de prueba que contienen los siguientes correos y contraseñas
+
+- aaa@gmail.com - 1q2w3e (Administrador)
+- bbb@gmail.com - 1q2w3e (Mesero)
+- ccc@gmail.com - 1q2w3e (Cocinero)
+- ddd@gmail.com - 1q2w3e (Cliente)
