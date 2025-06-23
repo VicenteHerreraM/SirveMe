@@ -60,7 +60,14 @@ class BebestiblesForm(forms.ModelForm):
 class PedidoForm(forms.ModelForm):
     class Meta:
         model = Pedidos
-        fields = ['fk_mesa']
+        fields = ['fk_mesa', 'comentario']
+        widgets = {
+            'comentario': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 2,
+                'placeholder': 'Agrega un comentario opcional'
+            }),
+        }
 
 class DetallePedidoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

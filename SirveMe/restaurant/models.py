@@ -72,6 +72,7 @@ class Pedidos(models.Model):
     valor_total = models.IntegerField(default=0)
     estado = models.CharField(max_length=45)
     mesero = models.ForeignKey('users.CustomUser', on_delete=models.CASCADE , null=True , blank=True) 
+    comentario = models.TextField(null=True, blank=True, max_length=200)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  

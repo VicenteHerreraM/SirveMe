@@ -272,37 +272,61 @@ def crear_pedido(request):
             mesa_id = int(mesa_id)
         except ValueError:
             mesa_id = None
+    error_msg = None
     if request.method == 'POST':
         pedido_form = PedidoForm(request.POST)
         formset = DetallePedidoFormSet(request.POST, queryset=DetallePedido.objects.none())
         if pedido_form.is_valid() and formset.is_valid():
+            # Validar stock antes de guardar
+            for form in formset:
+                cantidad = form.cleaned_data.get('cantidad')
+                entrada = form.cleaned_data.get('entrada')
+                fondo = form.cleaned_data.get('platoDeFondo')
+                postre = form.cleaned_data.get('postre')
+                bebestible = form.cleaned_data.get('bebestible')
+                agregado = form.cleaned_data.get('agregadoSalsa')
+                if entrada and cantidad and cantidad > entrada.cantidad:
+                    error_msg = f"No hay suficiente stock de {entrada.nombre}."
+                    break
+                if fondo and cantidad and cantidad > fondo.cantidad:
+                    error_msg = f"No hay suficiente stock de {fondo.nombre}."
+                    break
+                if postre and cantidad and cantidad > postre.cantidad:
+                    error_msg = f"No hay suficiente stock de {postre.nombre}."
+                    break
+                if bebestible and cantidad and cantidad > bebestible.cantidad:
+                    error_msg = f"No hay suficiente stock de {bebestible.nombre}."
+                    break
+                if agregado and cantidad and cantidad > agregado.cantidad:
+                    error_msg = f"No hay suficiente stock de {agregado.nombre}."
+                    break
+            if error_msg:
+                # Renderiza el formulario con el mensaje de error
+                return render(request, 'crear_pedido.html', {
+                    'pedido_form': pedido_form,
+                    'formset': formset,
+                    'error_msg': error_msg
+                })
+            # Si todo está bien, guarda el pedido como antes
             pedido = pedido_form.save(commit=False)
             pedido.mesero = request.user
             pedido.estado = 'pendiente'
-            # La cantidad de menús puede ser la suma de las cantidades de los detalles
             pedido.cantidad_menus = sum([
                 form.cleaned_data['cantidad']
                 for form in formset
                 if form.cleaned_data.get('cantidad')
             ])
-            pedido.save()  
-
-            # Marcar la mesa como ocupada
+            pedido.save()
             mesa = pedido.fk_mesa
             mesa.estado = False
             mesa.save()
-
-            # Guardar los detalles del pedido
             for form in formset:
                 detalle = form.save(commit=False)
                 if detalle.cantidad and (detalle.entrada or detalle.platoDeFondo or detalle.postre or detalle.bebestible):
                     detalle.pedido = pedido
                     detalle.save()
-
-            # Ahora que existen los detalles, recalcula y guarda el total
             pedido.valor_total = pedido.calcular_total()
             pedido.save(update_fields=['valor_total'])
-
             return redirect('homeWaiter')
     else:
         initial_data = {'fk_mesa': mesa_id} if mesa_id else None

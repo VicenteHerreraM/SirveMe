@@ -14,12 +14,18 @@
       <h2 class="mb-4 text-center">Pedidos Pendientes</h2>
       {% if pedidos %} {% for pedido in pedidos %}
       <div class="card mb-4">
-        <div class="card-header">
-          <strong>Mesa:</strong> {{ pedido.fk_mesa.numeroMesa }} |
-          <strong>Mesero:</strong> {{ pedido.mesero.first_name }} 
-          {{ pedido.mesero.last_name }} | <strong>Fecha:</strong> 
-          {{pedido.fecha|date:"d/m/Y H:i" }}
-        </div>
+      <div class="card-header">
+        <strong>Mesa:</strong> {{ pedido.fk_mesa.numeroMesa }} |
+        <strong>Mesero:</strong> {{ pedido.mesero.first_name }} 
+        {{ pedido.mesero.last_name }} | <strong>Fecha:</strong> 
+        {{ pedido.fecha|date:"d/m/Y H:i" }}
+        {% if pedido.comentario %}
+          <div class="mt-2">
+            <span class="badge bg-warning text-dark">Comentario:</span>
+            <span>{{ pedido.comentario }}</span>
+          </div>
+        {% endif %}
+      </div>
         <div class="card-body">
           <ul class="list-group">
             {% for detalle in pedido.detalles.all %}
