@@ -245,14 +245,14 @@ def agregado_create(request):
     return render(request, 'agregado_form.html', {'form': form})
 
 def agregado_update(request, pk):
-    AgregadoSalsa = get_object_or_404(AgregadoSalsa, pk=pk)
+    agregado = get_object_or_404(AgregadoSalsa, pk=pk)
     if request.method == 'POST':
-        form = AgregadoSalsaForm(request.POST, instance=AgregadoSalsa)
+        form = AgregadoSalsaForm(request.POST, instance=agregado)
         if form.is_valid():
             form.save()
             return redirect('agregado_list')
     else:
-        form = AgregadoSalsaForm(instance=AgregadoSalsa)
+        form = AgregadoSalsaForm(instance=agregado)
     return render(request, 'agregado_form.html', {'form': form})
 
 def agregado_delete(request, pk):
@@ -277,8 +277,31 @@ def crear_pedido(request):
         pedido_form = PedidoForm(request.POST)
         formset = DetallePedidoFormSet(request.POST, queryset=DetallePedido.objects.none())
         if pedido_form.is_valid() and formset.is_valid():
+            # Validar que al menos un producto esté seleccionado y cantidad > 0
+            hay_producto = False
+            for form in formset:
+                if form.cleaned_data.get('DELETE'):
+                    continue  # Ignora los eliminados
+                cantidad = form.cleaned_data.get('cantidad')
+                entrada = form.cleaned_data.get('entrada')
+                fondo = form.cleaned_data.get('platoDeFondo')
+                postre = form.cleaned_data.get('postre')
+                bebestible = form.cleaned_data.get('bebestible')
+                agregado = form.cleaned_data.get('agregadoSalsa')
+                if cantidad and cantidad > 0 and (entrada or fondo or postre or bebestible or agregado):
+                    hay_producto = True
+                    break
+            if not hay_producto:
+                error_msg = "Debes seleccionar al menos un producto y una cantidad mayor a cero."
+                return render(request, 'crear_pedido.html', {
+                    'pedido_form': pedido_form,
+                    'formset': formset,
+                    'error_msg': error_msg
+                })
             # Validar stock antes de guardar
             for form in formset:
+                if form.cleaned_data.get('DELETE'):
+                    continue  # Ignora los eliminados
                 cantidad = form.cleaned_data.get('cantidad')
                 entrada = form.cleaned_data.get('entrada')
                 fondo = form.cleaned_data.get('platoDeFondo')
@@ -314,15 +337,17 @@ def crear_pedido(request):
             pedido.cantidad_menus = sum([
                 form.cleaned_data['cantidad']
                 for form in formset
-                if form.cleaned_data.get('cantidad')
+                if form.cleaned_data.get('cantidad') and not form.cleaned_data.get('DELETE')
             ])
             pedido.save()
             mesa = pedido.fk_mesa
             mesa.estado = False
             mesa.save()
             for form in formset:
+                if form.cleaned_data.get('DELETE'):
+                    continue
                 detalle = form.save(commit=False)
-                if detalle.cantidad and (detalle.entrada or detalle.platoDeFondo or detalle.postre or detalle.bebestible):
+                if detalle.cantidad and (detalle.entrada or detalle.platoDeFondo or detalle.postre or detalle.bebestible or detalle.agregadoSalsa):
                     detalle.pedido = pedido
                     detalle.save()
             pedido.valor_total = pedido.calcular_total()
@@ -508,12 +533,8 @@ def checkout(request):
             metodo = form.cleaned_data['metodo']
             if metodo == 'domicilio':
                 return redirect('checkout_direccion')
-            else:
-                return render(request, 'checkout_confirmacion.html', {
-                    'usuario': usuario,
-                    'metodo': 'retiro',
-                    'carro': carro
-                })
+            elif metodo == 'retiro':
+                return redirect('checkout_presencial_confirmar')
     else:
         form = MetodoEntregaForm()
 
@@ -542,7 +563,8 @@ def checkout_direccion(request):
         if not carro:
             return render(request, 'checkout_confirmacion.html', {
                 'usuario': usuario,
-                'mensaje': 'No hay productos en el carro.'
+                'mensaje': 'No hay productos en el carro.',
+                'metodo': 'domicilio'
             })
         pedido = Pedidos.objects.create(
             estado='en linea',  
@@ -606,7 +628,7 @@ def checkout_direccion(request):
         #Limpia el carro de compras del cliente
         request.session['carro'] = []
         request.session.modified = True
-        return render(request, 'checkout_confirmacion.html', {'usuario': usuario, 'pedido': pedido})
+        return render(request, 'checkout_confirmacion.html', {'usuario': usuario, 'pedido': pedido , 'metodo' : 'domicilio'})
     return render(request, 'checkout_direccion.html', {'usuario': usuario})
 
 #Muy similar a la funcion anterior, pero no guarda direccion de usuario
@@ -617,69 +639,80 @@ def checkout_presencial(request):
     if not carro:
         return render(request, 'checkout_confirmacion.html', {
             'usuario': usuario,
-            'mensaje': 'No hay productos en el carro.'
+            'mensaje': 'No hay productos en el carro.',
+            'metodo': 'retiro'
         })
-    pedido = Pedidos.objects.create(
-        estado='En preparacion',
-        fecha=timezone.now()
-    )
-    for item in carro:
-        producto_id = item['producto_id']
-        cantidad = int(item['cantidad'])
-        tipo = item['tipo']
-        if tipo == 'bebestible':
-            producto = Bebestibles.objects.get(pk=producto_id)
-            producto.cantidad -= cantidad
-            producto.save()
-            DetallePedido.objects.create(
-                pedido=pedido,
-                bebestible=producto,
-                cantidad=cantidad,
-                tipo='bebestible'
-            )
-        elif tipo == 'fondo':
-            producto = PlatoDeFondo.objects.get(pk=producto_id)
-            producto.cantidad -= cantidad
-            producto.save()
-            DetallePedido.objects.create(
-                pedido=pedido,
-                platoDeFondo=producto,
-                cantidad=cantidad,
-                tipo='fondo'
-            )
-        elif tipo == 'entrada':
-            producto = Entrada.objects.get(pk=producto_id)
-            producto.cantidad -= cantidad
-            producto.save()
-            DetallePedido.objects.create(
-                pedido=pedido,
-                entrada=producto,
-                cantidad=cantidad,
-                tipo='entrada'
-            )
-        elif tipo == 'agregado':
-            producto = AgregadoSalsa.objects.get(pk=producto_id)
-            producto.cantidad -= cantidad
-            producto.save()
-            DetallePedido.objects.create(
-                pedido=pedido,
-                agregadoSalsa=producto,
-                cantidad=cantidad,
-                tipo='agregado'
-            )
-        elif tipo == 'postre':
-            producto = Postre.objects.get(pk=producto_id)
-            producto.cantidad -= cantidad
-            producto.save()
-            DetallePedido.objects.create(
-                pedido=pedido,
-                postre=producto,
-                cantidad=cantidad,
-                tipo='postre'
-            )
-    request.session['carro'] = []
-    request.session.modified = True
-    return render(request, 'checkout_confirmacion.html', {'usuario': usuario, 'pedido': pedido})
+
+    if request.method == 'POST':
+        pedido = Pedidos.objects.create(
+            estado='en linea',
+            fecha=timezone.now()
+        )
+        for item in carro:
+            producto_id = item['producto_id']
+            cantidad = int(item['cantidad'])
+            tipo = item['tipo']
+            if tipo == 'bebestible':
+                producto = Bebestibles.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    bebestible=producto,
+                    cantidad=cantidad,
+                    tipo='bebestible'
+                )
+            elif tipo == 'fondo':
+                producto = PlatoDeFondo.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    platoDeFondo=producto,
+                    cantidad=cantidad,
+                    tipo='fondo'
+                )
+            elif tipo == 'entrada':
+                producto = Entrada.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    entrada=producto,
+                    cantidad=cantidad,
+                    tipo='entrada'
+                )
+            elif tipo == 'agregado':
+                producto = AgregadoSalsa.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    agregadoSalsa=producto,
+                    cantidad=cantidad,
+                    tipo='agregado'
+                )
+            elif tipo == 'postre':
+                producto = Postre.objects.get(pk=producto_id)
+                producto.cantidad -= cantidad
+                producto.save()
+                DetallePedido.objects.create(
+                    pedido=pedido,
+                    postre=producto,
+                    cantidad=cantidad,
+                    tipo='postre'
+                )
+        request.session['carro'] = []
+        request.session.modified = True
+        return render(request, 'checkout_confirmacion.html', {
+            'usuario': usuario,
+            'pedido': pedido,
+            'metodo': 'retiro'
+        })
+    return render(request, 'checkout_presencial_confirmar.html', {
+        'usuario': usuario,
+        'carro': carro
+    })
 
 def pedidos_en_linea(request):
     pedidos = Pedidos.objects.filter(estado='en linea').prefetch_related('detalles')

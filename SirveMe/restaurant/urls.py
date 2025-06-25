@@ -44,6 +44,7 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('checkout_direccion/', views.checkout_direccion, name='checkout_direccion'),
     path('checkout_presencial/', views.checkout_presencial, name='checkout_presencial'),
+    path('checkout_presencial_confirmar/', views.checkout_presencial, name='checkout_presencial_confirmar'),
     path('atencion-mesas/', views.atencion_mesas, name='atencion_mesas'),
     path('finalizar-mesa/<int:mesa_id>/', views.finalizar_mesa, name='finalizar_mesa'),
     path('productos_vendidos/', views.productos_vendidos, name='productos_vendidos'),

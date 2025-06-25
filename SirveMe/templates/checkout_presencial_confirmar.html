@@ -1,0 +1,32 @@
+<!-- filepath: c:\Users\vice1\OneDrive\Documentos\Proyecto de titulo\SirveMe\templates\checkout_presencial_confirmar.html -->
+{% include 'header.html' %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="mb-4 text-center">Confirmar Pedido para Retiro Presencial</h2>
+    <h5>Resumen de tu pedido:</h5>
+    {% if carro %}
+        <ul class="list-group mb-3">
+            {% for item in carro %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>
+                        {% if item.tipo == 'bebestible' %}Bebestible:{% endif %}
+                        {% if item.tipo == 'fondo' %}Plato de Fondo:{% endif %}
+                        {% if item.tipo == 'entrada' %}Entrada:{% endif %}
+                        {% if item.tipo == 'agregado' %}Agregado/Salsa:{% endif %}
+                        {% if item.tipo == 'postre' %}Postre:{% endif %}
+                        <strong>{{ item.nombre }}</strong>
+                    </span>
+                    <span class="badge bg-primary rounded-pill">x{{ item.cantidad }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success w-100">Confirmar y enviar pedido</button>
+        </form>
+    {% else %}
+        <div class="alert alert-warning text-center">No hay productos en el carro.</div>
+        <a href="{% url 'store' %}" class="btn btn-secondary w-100">Volver a la tienda</a>
+    {% endif %}
+</div>
